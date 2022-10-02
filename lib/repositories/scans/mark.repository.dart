@@ -146,7 +146,7 @@ class MarkRepository extends ScanRepositoryBase {
   }
 
   @override
-  Future<ContentModel> content(Chapter chapter, int index) async {
+  Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
     final response = await _dio.get(chapter.url, options: _cache.options);
@@ -154,11 +154,12 @@ class MarkRepository extends ScanRepositoryBase {
 
     final novelContent = $.querySelector('.reading-content .text-left');
     if (novelContent != null) {
-      return ContentModel(
+      return Content(
         id: chapter.id,
         index: index,
         name: chapter.name,
         text: novelContent.innerHtml,
+        bookId: chapter.bookId,
       );
     }
 
@@ -168,11 +169,12 @@ class MarkRepository extends ScanRepositoryBase {
       if (source.isNotEmpty) sources.add(source);
     }
 
-    return ContentModel(
+    return Content(
       id: chapter.id,
       index: index,
       name: chapter.name,
       sources: sources,
+      bookId: chapter.bookId,
     );
   }
 }

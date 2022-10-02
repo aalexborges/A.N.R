@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 class BookChaptersTitleWidget extends StatelessWidget {
+  final Widget? secondary;
   final void Function()? onChangeOrder;
 
-  const BookChaptersTitleWidget({this.onChangeOrder, super.key});
+  const BookChaptersTitleWidget({
+    this.secondary,
+    this.onChangeOrder,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +23,7 @@ class BookChaptersTitleWidget extends StatelessWidget {
           ),
           Row(
             children: [
+              SizedBox(child: secondary),
               IconButton(
                 onPressed: onChangeOrder,
                 icon: const Icon(Icons.sort_by_alpha_rounded),

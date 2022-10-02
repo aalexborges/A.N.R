@@ -89,7 +89,7 @@ class ReaperRepository extends ScanRepositoryBase {
   }
 
   @override
-  Future<ContentModel> content(Chapter chapter, int index) async {
+  Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
     Response response = await _dio.get(chapter.url, options: _cache.options);
@@ -105,11 +105,12 @@ class ReaperRepository extends ScanRepositoryBase {
     final content = response.data['content'];
 
     if (content is String) {
-      return ContentModel(
+      return Content(
         id: chapter.id,
         index: index,
         name: chapter.name,
         text: content,
+        bookId: chapter.bookId,
       );
     }
 
@@ -118,11 +119,12 @@ class ReaperRepository extends ScanRepositoryBase {
       sources.add('$apiBaseURL/$src');
     }
 
-    return ContentModel(
+    return Content(
       id: chapter.id,
       index: index,
       name: chapter.name,
       sources: sources,
+      bookId: chapter.bookId,
     );
   }
 }

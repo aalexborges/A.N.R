@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:A.N.R/constants/scans.dart';
+import 'package:A.N.R/database/downloads_db.dart';
 import 'package:A.N.R/models/book.model.dart';
 import 'package:A.N.R/models/chapter.model.dart';
+import 'package:A.N.R/models/content.model.dart';
 import 'package:A.N.R/services/reader.service.dart';
 import 'package:A.N.R/store/historic.store.dart';
 import 'package:A.N.R/templates/reader_html.template.dart';
@@ -38,7 +40,14 @@ class _ReaderScreenState extends State<ReaderScreen>
 
   Future<void> _content(int index) async {
     final chapter = widget.props.chapters[index];
-    final content = await widget.props.book.scan.repository.content(
+
+    Content? content = await DownloadsDB.instance.content(
+      chapter.bookId,
+      chapter.id,
+      index,
+    );
+
+    content ??= await widget.props.book.scan.repository.content(
       chapter,
       index,
     );

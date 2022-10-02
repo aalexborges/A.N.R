@@ -7,11 +7,17 @@ class Chapter {
   final String bookId;
   final double read;
 
+  /* Download finished */
+  final bool finished;
+
   const Chapter({
     required this.url,
     required this.name,
     required this.bookId,
     this.read = 0,
+
+    /* Download finished */
+    this.finished = false,
   });
 
   String get id {
@@ -65,7 +71,6 @@ class Chapter {
       'url': url,
       'name': name,
       'bookId': bookId,
-      'read': read,
     };
   }
 
@@ -75,6 +80,7 @@ class Chapter {
       name: map['name'] as String,
       bookId: map['bookId'] as String,
       read: map['read'] == null ? 0 : map['read'] as double,
+      finished: map['finished'] == 0 ? false : true,
     );
   }
 
@@ -85,7 +91,7 @@ class Chapter {
 
   @override
   String toString() {
-    return 'Chapter(url: $url, name: $name, bookId: $bookId, read: $read)';
+    return 'Chapter(url: $url, name: $name, bookId: $bookId, read: $read, finished: $finished)';
   }
 
   @override
@@ -95,11 +101,16 @@ class Chapter {
     return other.url == url &&
         other.name == name &&
         other.bookId == bookId &&
-        other.read == read;
+        other.read == read &&
+        other.finished == finished;
   }
 
   @override
   int get hashCode {
-    return url.hashCode ^ name.hashCode ^ bookId.hashCode ^ read.hashCode;
+    return url.hashCode ^
+        name.hashCode ^
+        bookId.hashCode ^
+        read.hashCode ^
+        finished.hashCode;
   }
 }

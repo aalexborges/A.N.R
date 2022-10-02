@@ -75,7 +75,7 @@ class RandomRepository extends ScanRepositoryBase {
   }
 
   @override
-  Future<ContentModel> content(Chapter chapter, int index) async {
+  Future<Content> content(Chapter chapter, int index) async {
     final webView = await _request(chapter.url);
     final controller = webView.webViewController;
 
@@ -89,7 +89,7 @@ class RandomRepository extends ScanRepositoryBase {
     );
 
     await webView.dispose();
-    return ContentModel.fromMap(content?.value);
+    return Content.fromMap(content?.value);
   }
 
   Future<HeadlessInAppWebView> _request(String url) async {

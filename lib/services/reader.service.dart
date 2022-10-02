@@ -6,7 +6,7 @@ class ReaderService {
 
   const ReaderService(this.controller);
 
-  Future<void> insert(ContentModel content) async {
+  Future<void> insert(Content content) async {
     if (content.sources != null) {
       await controller.runJavascript("Chapter.insert('${content.toJson()}')");
       return;

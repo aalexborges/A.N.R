@@ -44,8 +44,8 @@ abstract class ScanRepositoryBase {
     return const BookData(categories: [], chapters: [], sinopse: '');
   }
 
-  Future<ContentModel> content(Chapter chapter, int index) async {
-    return const ContentModel(id: '', index: 0, name: '');
+  Future<Content> content(Chapter chapter, int index) async {
+    return const Content(id: '', index: 0, name: '', bookId: '');
   }
 
   Map<String, String>? get headers => null;

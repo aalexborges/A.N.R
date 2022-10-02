@@ -1,6 +1,6 @@
 import 'package:A.N.R/constants/routes_path.dart';
 import 'package:A.N.R/constants/scans.dart';
-import 'package:A.N.R/services/user_dialog.service.dart';
+import 'package:A.N.R/services/user_modal.service.dart';
 import 'package:A.N.R/store/home.store.dart';
 import 'package:A.N.R/widgets/book.widget.dart';
 import 'package:A.N.R/widgets/book_shimmer.widget.dart';

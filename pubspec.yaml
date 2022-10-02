@@ -30,33 +30,39 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_local_notifications: ^11.0.1
   flutter_signin_button: ^2.0.0
   flutter_native_splash: ^2.2.9
+  flutter_inappwebview: ^5.4.3+7
   cached_network_image: ^3.2.1
+  permission_handler: ^10.0.2
   dio_cookie_manager: ^2.0.0
   firebase_database: ^9.1.3
   webview_flutter: ^3.0.4
   dio_http_cache: ^0.3.0
   google_sign_in: ^5.4.1
+  path_provider: ^2.0.11
   firebase_core: ^1.21.1
   firebase_auth: ^3.7.0
   flutter_mobx: ^2.0.6+1
+  workmanager: ^0.5.0
   flutter_svg: ^1.1.4
   cookie_jar: ^3.0.1
   collection: ^1.16.0
   go_router: ^4.3.0
   provider: ^6.0.3
+  sqflite: ^2.1.0
   shimmer: ^2.0.0
   slugify: ^2.0.0
   lottie: ^1.4.2
   mobx: ^2.0.7+5
   html: ^0.15.0
+  path: ^1.8.2
   dio: ^4.0.6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  flutter_inappwebview: ^5.4.3+7
 
 dev_dependencies:
   flutter_test:

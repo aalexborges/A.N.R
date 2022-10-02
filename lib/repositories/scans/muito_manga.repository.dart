@@ -116,7 +116,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
   }
 
   @override
-  Future<ContentModel> content(Chapter chapter, int index) async {
+  Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
     final response = await _dio.get(chapter.url, options: _cache.options);
@@ -132,11 +132,12 @@ class MuitoMangaRepository extends ScanRepositoryBase {
       if (item.contains('imgs/')) sources.add(item.replaceAll('"', ''));
     }
 
-    return ContentModel(
+    return Content(
       id: chapter.id,
       index: index,
       name: chapter.name,
       sources: sources,
+      bookId: chapter.bookId,
     );
   }
 }
