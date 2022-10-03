@@ -108,6 +108,8 @@ class HuntersRepository extends ScanRepositoryBase {
       }
     });
 
+    type ??= book.type;
+
     // Sinopse -------------------------------------------------
 
     final sinopse = $.querySelector('.summary__content')?.text.trim() ?? '';

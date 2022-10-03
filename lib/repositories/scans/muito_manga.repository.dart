@@ -112,6 +112,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
       categories: categories,
       chapters: chapters,
       sinopse: sinopse,
+      type: book.type,
     );
   }
 

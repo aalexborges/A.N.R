@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DownloadsDB {
-  static const _databaseName = "downloads.db";
+  static const _databaseName = "book_downloads.db";
 
   static const _chapterTable = "chapters";
   static const _contentTable = "content";
@@ -47,7 +47,7 @@ class DownloadsDB {
       scan TEXT NOT NULL,
       sinopse TEXT NOT NULL,
       imageURL TEXT NOT NULL,
-      imageURL2 TEXT NOT NULL,
+      imageURL2 TEXT,
       categories TEXT NOT NULL,
       bookId TEXT NOT NULL UNIQUE
     );

@@ -75,9 +75,28 @@ class ChapterListTileWidget extends StatelessWidget {
           );
 
           if (action == _SheetAction.ADD_TO_DOWNLOAD) {
-            downloadStore.addInQueue(downloadBook, chapter);
+            downloadStore.addInQueue(downloadBook, chapter).catchError((e) {
+              print(e);
+              final message = ScaffoldMessenger.of(context);
+
+              message.clearSnackBars();
+              message.showSnackBar(const SnackBar(
+                content: Text(
+                  'Erro ao adicionar o capítulo a fila de download',
+                ),
+              ));
+            });
           } else if (action == _SheetAction.DELETE_TO_DOWNLOAD) {
-            downloadStore.remove(chapter);
+            downloadStore.remove(chapter).catchError((e) {
+              final message = ScaffoldMessenger.of(context);
+
+              message.clearSnackBars();
+              message.showSnackBar(const SnackBar(
+                content: Text(
+                  'Erro ao remover o capítulo da fila de download',
+                ),
+              ));
+            });
           }
         },
       ),

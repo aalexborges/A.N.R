@@ -106,6 +106,8 @@ class PrismaRepository extends ScanRepositoryBase {
       }
     });
 
+    type ??= book.type;
+
     // Sinopse -------------------------------------------------
 
     final sinopse = $.querySelector('.manga-excerpt')?.text.trim() ?? '';

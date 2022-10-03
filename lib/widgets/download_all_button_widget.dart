@@ -27,7 +27,17 @@ class DownloadAllButtonWidget extends StatelessWidget {
         icon: const Icon(Icons.download_rounded),
         onPressed: disabled
             ? null
-            : () => store.addMany(book: book, bookData: bookData!),
+            : () =>
+                store.addMany(book: book, bookData: bookData!).catchError((e) {
+                  final message = ScaffoldMessenger.of(context);
+
+                  message.clearSnackBars();
+                  message.showSnackBar(const SnackBar(
+                    content: Text(
+                      'Erro ao adicionar os capítulos da fila de download',
+                    ),
+                  ));
+                }),
       );
     });
   }

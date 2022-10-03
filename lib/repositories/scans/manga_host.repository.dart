@@ -142,6 +142,8 @@ class MangaHostRepository extends ScanRepositoryBase {
       }
     });
 
+    type ??= book.type;
+
     // Sinopse -------------------------------------------------
 
     final sinopse = $.querySelector('div.text .paragraph')?.text.trim() ?? '';

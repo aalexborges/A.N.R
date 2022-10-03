@@ -108,6 +108,8 @@ class MarkRepository extends ScanRepositoryBase {
       }
     });
 
+    type ??= book.type;
+
     // Sinopse -------------------------------------------------
 
     const sinopseSelector = '.description-summary > .post-content_item';

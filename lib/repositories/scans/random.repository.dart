@@ -89,13 +89,13 @@ class RandomRepository extends ScanRepositoryBase {
     );
 
     await webView.dispose();
-    return Content.fromMap(content?.value);
+    return Content.fromMap({...content?.value, 'bookId': chapter.bookId});
   }
 
   Future<HeadlessInAppWebView> _request(String url) async {
     final completer = Completer<HeadlessInAppWebView>();
 
-    final timer = Timer(const Duration(seconds: 20), () {
+    final timer = Timer(const Duration(seconds: 25), () {
       completer.completeError('');
     });
 
@@ -223,11 +223,13 @@ class RandomRepository extends ScanRepositoryBase {
 
     const sources = [];
     for (const img of document.querySelectorAll('.reading-content img')) {
-      let src = img.getAttribute("data-src");
+      let src = img.getAttribute("data-src") || img.getAttribute("src");
       if (!src) continue;
 
-      src = await getImage(img.getAttribute("data-src"));
-      sources.push(src);
+      try {
+        src = await getImage(src);
+        sources.push(src);
+      } catch (e) {}
     }
 
     return {

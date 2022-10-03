@@ -31,32 +31,33 @@ class Content {
   String toJson() => json.encode(toMap());
 
   factory Content.fromMap(Map<String, dynamic> map) {
-    dynamic content = '';
+    List<String>? sources;
+    String? text;
 
     if (map['content'] is List) {
-      content = [];
+      sources = [];
 
       for (var item in map['content']) {
-        content.add(item.toString());
+        sources.add(item.toString());
       }
     } else if (map['content'] is String) {
-      content = map['content'];
+      text = map['content'];
     } else if (map['sources'] is List) {
-      content = [];
+      sources = [];
 
       for (var item in map['sources']) {
-        content.add(item.toString());
+        sources.add(item.toString());
       }
     } else if (map['text'] is String) {
-      content = map['text'];
+      text = map['text'];
     }
 
     return Content(
       id: map['id'] as String,
       index: map['index'] as int,
       name: map['name'] as String,
-      sources: content is String ? null : content,
-      text: content is String ? content : null,
+      sources: sources,
+      text: text,
       bookId: map['bookId'],
     );
   }

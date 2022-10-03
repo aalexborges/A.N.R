@@ -83,14 +83,15 @@ Future<void> _download() async {
       for (String src in sources) {
         downloadIndex++;
 
-        final fileType = src.split('.').last.trim();
-        final saveDir = Directory(
-          '${chapterDir.path}/$downloadIndex.$fileType',
-        );
-
         if (src.contains('base64')) {
+          final fileType = src.split('image/').last.split(';base64').first;
+          final saveDir = Directory(
+            '${chapterDir.path}/$downloadIndex.$fileType',
+          );
+
           try {
-            final bytes = base64.decode(src);
+            final replacedSrc = src.split(';base64,').last;
+            final bytes = base64.decode(replacedSrc);
             final file = File(saveDir.path);
 
             await file.writeAsBytes(bytes);
@@ -99,6 +100,11 @@ Future<void> _download() async {
 
           continue;
         }
+
+        final fileType = src.split('.').last.trim();
+        final saveDir = Directory(
+          '${chapterDir.path}/$downloadIndex.$fileType',
+        );
 
         try {
           await dio.download(
