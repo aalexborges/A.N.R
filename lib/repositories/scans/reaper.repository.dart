@@ -5,6 +5,12 @@ class ReaperRepository extends ScanRepositoryBase {
   final String baseURL = 'https://reaperscans.net';
   final String apiBaseURL = 'https://api.reaperscans.net';
 
+  @override
+  final baseURLs = <String>[
+    'https://reaperscans.net',
+    'https://reaperscans.com.br',
+  ];
+
   ReaperRepository() {
     _cache = DioCache(url: baseURL);
     _dio = Dio()..interceptors.add(_cache.cache.interceptor);
