@@ -48,7 +48,7 @@ class DownloadNotificationsService {
       notification.id,
       'Download finalizado - ${chapter.name}',
       'O download do ${chapter.name} do ${book.type?.toLowerCase() ?? 'livro'} ${book.name} foi finalizado.',
-      NotificationDetails(android: _androidDetails(book.id)),
+      NotificationDetails(android: _androidFinishedDetails(book.id)),
     );
   }
 
@@ -77,6 +77,24 @@ class DownloadNotificationsService {
       importance: Importance.max,
       priority: Priority.max,
       groupKey: groupKey,
+      category: AndroidNotificationCategory.service,
+      playSound: false,
+      enableVibration: false,
+    );
+  }
+
+  AndroidNotificationDetails _androidFinishedDetails(String groupKey) {
+    return AndroidNotificationDetails(
+      'download_finished_notifications_channel',
+      'Download Finished Notifications',
+      channelDescription: 'Downloads finalizados',
+      enableLights: true,
+      importance: Importance.max,
+      priority: Priority.max,
+      groupKey: groupKey,
+      category: AndroidNotificationCategory.service,
+      playSound: false,
+      enableVibration: false,
     );
   }
 
@@ -86,11 +104,14 @@ class DownloadNotificationsService {
       'Download Progress Notifications',
       channelDescription: 'Notificação do progresso do download',
       enableLights: true,
-      importance: Importance.max,
-      priority: Priority.max,
+      importance: Importance.min,
+      priority: Priority.min,
       progress: progress,
       maxProgress: 100,
       showProgress: true,
+      category: AndroidNotificationCategory.progress,
+      playSound: false,
+      enableVibration: false,
     );
   }
 }
