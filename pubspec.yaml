@@ -33,7 +33,6 @@ dependencies:
   flutter_local_notifications: ^11.0.1
   flutter_signin_button: ^2.0.0
   flutter_native_splash: ^2.2.9
-  flutter_inappwebview: ^5.4.3+7
   cached_network_image: ^3.2.1
   permission_handler: ^10.0.2
   dio_cookie_manager: ^2.0.0
