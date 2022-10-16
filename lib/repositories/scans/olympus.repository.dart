@@ -14,7 +14,7 @@ class OlympusRepository extends ScanRepositoryBase {
     final items = <Book>[];
 
     try {
-      final response = await _dio.get(baseURL, options: _cache.options);
+      final response = await _dio.get(baseURL, options: _cache.cacheOptions);
       final $ = parse(response.data);
 
       for (Element element in $.querySelectorAll('#loop-content .row a')) {
@@ -51,7 +51,7 @@ class OlympusRepository extends ScanRepositoryBase {
 
     _updateCache(url, subKey: subKey);
 
-    final response = await _dio.get(url, options: _cache.options);
+    final response = await _dio.get(url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     for (Element element in $.querySelectorAll('.tab-thumb a')) {
@@ -80,7 +80,7 @@ class OlympusRepository extends ScanRepositoryBase {
   Future<BookData> data(Book book) async {
     _updateCache(book.url, subKey: book.url);
 
-    final response = await _dio.get(book.url, options: _cache.options);
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     // Categories ----------------------------------------------
@@ -138,7 +138,7 @@ class OlympusRepository extends ScanRepositoryBase {
   Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
-    final response = await _dio.get(chapter.url, options: _cache.options);
+    final response = await _dio.get(chapter.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     final novelContent = $.querySelector('.reading-content .text-left');

@@ -39,7 +39,7 @@ class MangaHostRepository extends ScanRepositoryBase {
       _updateCache(url);
 
       try {
-        final response = await _dio.get(url, options: _cache.options);
+        final response = await _dio.get(url, options: _cache.cacheOptions);
         if (_isCacheResponse(response)) return;
 
         final $ = parse(response.data);
@@ -82,7 +82,7 @@ class MangaHostRepository extends ScanRepositoryBase {
 
       _updateCache(url, subKey: subKey);
 
-      final response = await _dio.get(url, options: _cache.options);
+      final response = await _dio.get(url, options: _cache.cacheOptions);
       if (_isCacheResponse(response)) return;
 
       final $ = parse(response.data);
@@ -116,7 +116,7 @@ class MangaHostRepository extends ScanRepositoryBase {
   Future<BookData> data(Book book) async {
     _updateCache(book.url, subKey: book.url);
 
-    final response = await _dio.get(book.url, options: _cache.options);
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     // Categories ----------------------------------------------
@@ -178,7 +178,7 @@ class MangaHostRepository extends ScanRepositoryBase {
   Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
-    final response = await _dio.get(chapter.url, options: _cache.options);
+    final response = await _dio.get(chapter.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     final sources = <String>[];

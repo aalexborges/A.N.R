@@ -14,7 +14,7 @@ class PrismaRepository extends ScanRepositoryBase {
     final items = <Book>[];
 
     try {
-      final response = await _dio.get(baseURL, options: _cache.options);
+      final response = await _dio.get(baseURL, options: _cache.cacheOptions);
       final $ = parse(response.data);
 
       const elementsSelector = '#loop-content .page-item-detail';
@@ -52,7 +52,7 @@ class PrismaRepository extends ScanRepositoryBase {
 
     _updateCache(url, subKey: subKey);
 
-    final response = await _dio.get(url, options: _cache.options);
+    final response = await _dio.get(url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     for (Element element in $.querySelectorAll('.c-tabs-item div.row')) {
@@ -81,7 +81,7 @@ class PrismaRepository extends ScanRepositoryBase {
   Future<BookData> data(Book book) async {
     _updateCache(book.url, subKey: book.url);
 
-    final response = await _dio.get(book.url, options: _cache.options);
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     // Categories ----------------------------------------------
@@ -148,7 +148,7 @@ class PrismaRepository extends ScanRepositoryBase {
   Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
-    final response = await _dio.get(chapter.url, options: _cache.options);
+    final response = await _dio.get(chapter.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     final novelContent = $.querySelector('.reading-content .text-left');

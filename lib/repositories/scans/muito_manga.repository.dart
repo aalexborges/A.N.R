@@ -14,7 +14,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
     final items = <Book>[];
 
     try {
-      final response = await _dio.get(baseURL, options: _cache.options);
+      final response = await _dio.get(baseURL, options: _cache.cacheOptions);
       final $ = parse(response.data);
 
       for (Element element in $.querySelectorAll('#loadnews_here > div')) {
@@ -49,7 +49,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
 
     _updateCache(url, subKey: subKey);
 
-    final response = await _dio.get(url, options: _cache.options);
+    final response = await _dio.get(url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     for (Element element in $.querySelectorAll('.content_post > div')) {
@@ -76,7 +76,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
   Future<BookData> data(Book book) async {
     _updateCache(book.url, subKey: book.url);
 
-    final response = await _dio.get(book.url, options: _cache.options);
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     // Categories ----------------------------------------------
@@ -120,7 +120,7 @@ class MuitoMangaRepository extends ScanRepositoryBase {
   Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
-    final response = await _dio.get(chapter.url, options: _cache.options);
+    final response = await _dio.get(chapter.url, options: _cache.cacheOptions);
 
     final exp = RegExp(r'"(https:.*?)"');
     final matches = exp.allMatches(response.data);

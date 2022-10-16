@@ -20,18 +20,29 @@ class RandomRepository extends ScanRepositoryBase {
     final books = <Book>[];
 
     try {
-      final webView = await _request(baseURL);
-      final controller = webView.webViewController;
+      final response = await _dio.get(baseURL, options: _cache.cacheOptions);
+      final $ = parse(response.data);
 
-      final items = await controller.callAsyncJavaScript(
-        functionBody: _lastAddedJs,
-      );
+      const elementsSelector = '#loop-content .page-item-detail';
+      for (Element element in $.querySelectorAll(elementsSelector)) {
+        final scraping = ScrapingUtil(element);
 
-      for (var element in (items?.value ?? [])) {
-        books.add(Book.fromMap(element));
+        final url = scraping.getURL(selector: 'h3 a');
+        final name = scraping.getByText(selector: 'h3 a');
+        final image1 = scraping.getImage(selector: 'img');
+        final image2 = scraping.getImage(selector: 'img', bySrcSet: true);
+
+        if (scraping.hasEmpty([url, name, image1])) continue;
+
+        books.add(Book(
+          url: url,
+          name: name,
+          scan: Scans.RANDOM,
+          imageURL: image1,
+          imageURL2: image2,
+        ));
       }
 
-      await webView.dispose();
       return books;
     } catch (_) {
       return books;
@@ -45,201 +56,130 @@ class RandomRepository extends ScanRepositoryBase {
     final subKey = '?s=$value&post_type=wp-manga';
     final url = '$baseURL/$subKey';
 
-    final webView = await _request(url);
-    final controller = webView.webViewController;
+    _updateCache(url, subKey: subKey);
 
-    final items = await controller.callAsyncJavaScript(
-      functionBody: _searchJs,
-    );
+    final response = await _dio.get(url, options: _cache.cacheOptions);
+    final $ = parse(response.data);
 
-    for (var element in (items?.value ?? [])) {
-      books.add(Book.fromMap(element));
+    for (Element element in $.querySelectorAll('.c-tabs-item div.row')) {
+      final scraping = ScrapingUtil(element);
+
+      final url = scraping.getURL(selector: 'h3 a');
+      final name = scraping.getByText(selector: 'h3 a');
+      final image1 = scraping.getImage(selector: 'img');
+      final image2 = scraping.getImage(selector: 'img', bySrcSet: true);
+
+      if (scraping.hasEmpty([url, name, image1])) continue;
+
+      books.add(Book(
+        url: url,
+        name: name,
+        scan: Scans.RANDOM,
+        imageURL: image1,
+        imageURL2: image2,
+      ));
     }
 
-    await webView.dispose();
     return books;
   }
 
   @override
   Future<BookData> data(Book book) async {
-    final webView = await _request(book.url);
-    final controller = webView.webViewController;
+    _updateCache(book.url, subKey: book.url);
 
-    final items = await controller.callAsyncJavaScript(
-      functionBody: _bookJs,
-      arguments: {'bookId': book.id},
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
+    final $ = parse(response.data);
+
+    // Categories ----------------------------------------------
+
+    final categories = <String>[];
+
+    $.querySelectorAll('.genres-content a').forEach((element) {
+      final category = element.text.trim();
+      if (category.isNotEmpty) categories.add(category);
+    });
+
+    // Type ----------------------------------------------------
+
+    String? type;
+
+    $.querySelectorAll('.post-content_item').forEach((element) {
+      final scraping = ScrapingUtil(element);
+      final key = scraping.getByText(selector: 'h5').toLowerCase();
+
+      if (key == 'type') {
+        type = scraping.getByText(selector: '.summary-content');
+      }
+    });
+
+    type ??= book.type;
+
+    // Sinopse -------------------------------------------------
+
+    final sinopse = $.querySelector('.manga-excerpt')?.text.trim() ?? '';
+
+    // Chapters ------------------------------------------------
+
+    final chapters = <Chapter>[];
+
+    try {
+      final String cURL = '${book.url}/ajax/chapters'.replaceAll('//a', '/a');
+      final cache = DioCache(url: cURL, subKey: cURL);
+
+      final response = await _dio.post(cURL, options: cache.cacheOptions);
+      final $ = parse(response.data);
+
+      const chaptersSelector = 'ul.main > li.wp-manga-chapter > a';
+      $.querySelectorAll(chaptersSelector).forEach((element) {
+        final scraping = ScrapingUtil(element);
+
+        final url = scraping.getURL();
+        final name = scraping.getByText();
+
+        if (!scraping.hasEmpty([url, name])) {
+          chapters.add(Chapter(url: url, name: name, bookId: book.id));
+        }
+      });
+    } catch (_) {}
+
+    return BookData(
+      categories: categories,
+      chapters: chapters,
+      sinopse: sinopse,
+      type: type,
     );
-
-    await webView.dispose();
-    return BookData.fromMap(items?.value);
   }
 
   @override
   Future<Content> content(Chapter chapter, int index) async {
-    final webView = await _request(chapter.url);
-    final controller = webView.webViewController;
+    _updateCache(chapter.url, subKey: chapter.url);
 
-    final content = await controller.callAsyncJavaScript(
-      functionBody: _contentJs,
-      arguments: {
-        'chapterId': chapter.id,
-        'index': index,
-        'chapterName': chapter.name,
-      },
-    );
+    final response = await _dio.get(chapter.url, options: _cache.cacheOptions);
+    final $ = parse(response.data);
 
-    await webView.dispose();
-    return Content.fromMap({...content?.value, 'bookId': chapter.bookId});
-  }
-
-  Future<HeadlessInAppWebView> _request(String url) async {
-    final completer = Completer<HeadlessInAppWebView>();
-
-    final timer = Timer(const Duration(seconds: 25), () {
-      completer.completeError('');
-    });
-
-    bool onRandom = false;
-
-    final webView = HeadlessInAppWebView(
-      initialUrlRequest: URLRequest(url: Uri.parse(url)),
-      onTitleChanged: (controller, title) async {
-        if (title != null && title.contains('Random')) onRandom = true;
-      },
-    );
-
-    webView.onLoadStop = (controller, url) async {
-      if (onRandom) {
-        timer.cancel();
-        completer.complete(webView);
-      }
-    };
-
-    await webView.run();
-    return completer.future;
-  }
-
-  String get _lastAddedJs => """
-  $getImageJs
-
-  async function getLatestAdded() {
-    const books = [];
-    const items = document.querySelectorAll("#loop-content .page-item-detail");
-
-    for (const item of items) {
-      const a = item.querySelector("h3 a");
-      const img = item.querySelector("img");
-
-      if (!a || !img) continue;
-
-      const url = a.getAttribute("href");
-      const name = a.textContent?.trim();
-      const imageURL = await getImage(img.getAttribute("data-src"));
-
-      if (url && name && imageURL) books.push({ url, name, imageURL });
-    }
-
-    return books;
-  }
-
-  return await getLatestAdded();
-  """;
-
-  String get _searchJs => """
-  $getImageJs
-
-  async function searchResult() {
-    const books = [];
-    const items = document.querySelectorAll(".c-tabs-item div.row");
-
-    for (const item of items) {
-      const a = item.querySelector("h3 a");
-      const img = item.querySelector("img");
-
-      if (!a || !img) continue;
-
-      const url = a.getAttribute("href");
-      const name = a.textContent?.trim();
-      const imageURL = await getImage(img.getAttribute("data-src"));
-
-      if (url && name && imageURL) books.push({ url, name, imageURL });
-    }
-
-    return books;
-  }
-
-  return await searchResult();
-  """;
-
-  String get _bookJs => """
-  async function book() {
-    const chapters = [];
-    const categories = [];
-
-    let elements = document.querySelectorAll('.genres-content a');
-    for (const element of elements) {
-      const name = element.textContent?.trim();
-      if (name) categories.push(name);
-    }
-
-    let type = null;
-    elements = document.querySelectorAll('.post-content_item');
-    for (const element of elements) {
-      const key = element.querySelector('h5')?.textContent?.toLowerCase().trim();
-
-      if (key !== 'type') continue;
-      type = element.querySelector('.summary-content')?.textContent?.trim();
-    }
-
-    const sinopse = document.querySelector('.manga-excerpt')?.textContent?.trim() || '';
-
-    elements = document.querySelectorAll('ul.main li.wp-manga-chapter > a');
-    for (const element of elements) {
-      const url = element.getAttribute('href');
-      const name = element?.textContent?.trim();
-
-      if (url && name) chapters.push({ url, name, bookId });
-    }
-
-    return { type, chapters, categories, sinopse };
-  }
-
-  return await book();
-  """;
-
-  String get _contentJs => """
-  $getImageJs
-
-  async function content() {
-    const novelContent = document.querySelector('.reading-content .text-left');
-    if (novelContent) {
-      return {
-        id: chapterId,
+    final novelContent = $.querySelector('.reading-content .text-left');
+    if (novelContent != null) {
+      return Content(
+        id: chapter.id,
         index: index,
-        name: chapterName,
-        text: novelContent.innerHTML?.trim(),
-      };
+        name: chapter.name,
+        text: novelContent.innerHtml,
+        bookId: chapter.bookId,
+      );
     }
 
-    const sources = [];
-    for (const img of document.querySelectorAll('.reading-content img')) {
-      let src = img.getAttribute("data-src") || img.getAttribute("src");
-      if (!src) continue;
-
-      try {
-        src = await getImage(src);
-        sources.push(src);
-      } catch (e) {}
+    final sources = <String>[];
+    for (Element img in $.querySelectorAll('.reading-content img')) {
+      final source = ScrapingUtil(img).getImage();
+      if (source.isNotEmpty) sources.add(source);
     }
 
-    return {
-      id: chapterId,
+    return Content(
+      id: chapter.id,
       index: index,
-      name: chapterName,
-      sources,
-    }
+      name: chapter.name,
+      sources: sources,
+      bookId: chapter.bookId,
+    );
   }
-
-  return await content();
-  """;
 }

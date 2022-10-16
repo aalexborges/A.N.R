@@ -7,13 +7,11 @@ import 'package:A.N.R/models/book_data.model.dart';
 import 'package:A.N.R/models/chapter.model.dart';
 import 'package:A.N.R/models/content.model.dart';
 import 'package:A.N.R/services/dio_cache.service.dart';
-import 'package:A.N.R/utils/javascript.util.dart';
 import 'package:A.N.R/utils/scraping.util.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart' as cookie;
 import 'package:dio_http_cache/dio_http_cache.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 

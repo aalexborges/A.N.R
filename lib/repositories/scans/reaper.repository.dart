@@ -2,8 +2,8 @@ part of 'scan.repository.dart';
 
 class ReaperRepository extends ScanRepositoryBase {
   @override
-  final String baseURL = 'https://reaperscans.com.br';
-  final String apiBaseURL = 'https://api.reaperscans.com.br';
+  final String baseURL = 'https://reaperscans.net';
+  final String apiBaseURL = 'https://api.reaperscans.net';
 
   ReaperRepository() {
     _cache = DioCache(url: baseURL);
@@ -15,7 +15,7 @@ class ReaperRepository extends ScanRepositoryBase {
     final items = <Book>[];
 
     try {
-      final response = await _dio.get(baseURL, options: _cache.options);
+      final response = await _dio.get(baseURL, options: _cache.cacheOptions);
       final $ = parse(response.data);
 
       const elementsSelector = '.main-series .grid.grid-cols-2 > div';
@@ -48,7 +48,7 @@ class ReaperRepository extends ScanRepositoryBase {
   Future<BookData> data(Book book) async {
     _updateCache(book.url, subKey: book.url);
 
-    final response = await _dio.get(book.url, options: _cache.options);
+    final response = await _dio.get(book.url, options: _cache.cacheOptions);
     final $ = parse(response.data);
 
     // Categories ----------------------------------------------
@@ -92,7 +92,10 @@ class ReaperRepository extends ScanRepositoryBase {
   Future<Content> content(Chapter chapter, int index) async {
     _updateCache(chapter.url, subKey: chapter.url);
 
-    Response response = await _dio.get(chapter.url, options: _cache.options);
+    Response response = await _dio.get(
+      chapter.url,
+      options: _cache.cacheOptions,
+    );
     final $ = parse(response.data);
 
     final item = jsonDecode($.querySelector('#__NEXT_DATA__')?.innerHtml ?? '');
@@ -100,7 +103,7 @@ class ReaperRepository extends ScanRepositoryBase {
     final url = '$apiBaseURL/series/chapter/$id';
 
     _updateCache(url, subKey: id.toString());
-    response = await _dio.get(url, options: _cache.options);
+    response = await _dio.get(url, options: _cache.cacheOptions);
 
     final content = response.data['content'];
 
