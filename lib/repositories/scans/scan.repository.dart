@@ -63,4 +63,21 @@ abstract class ScanRepositoryBase {
   bool _isCacheResponse(Response response) {
     return null != response.headers.value(DIO_CACHE_HEADER_KEY_DATA_SOURCE);
   }
+
+  Future<void> _tryAllURLs(
+    Future<void> Function(String url, Future<void> Function() resolve) callback,
+  ) async {
+    for (String url in baseURLs) {
+      bool resolve = false;
+
+      try {
+        await callback(url, () async {
+          _validURL = url;
+          resolve = true;
+        });
+      } catch (_) {}
+
+      if (resolve) break;
+    }
+  }
 }

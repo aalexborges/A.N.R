@@ -76,7 +76,6 @@ class ChapterListTileWidget extends StatelessWidget {
 
           if (action == _SheetAction.ADD_TO_DOWNLOAD) {
             downloadStore.addInQueue(downloadBook, chapter).catchError((e) {
-              print(e);
               final message = ScaffoldMessenger.of(context);
 
               message.clearSnackBars();

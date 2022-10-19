@@ -29,15 +29,17 @@ class BookSubtitleInfosWidget extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _text('$totalChapters capítulos', context),
-          _separator(context),
-          _text(type, context),
-          _separator(context),
-          _text(scan.value, context),
-        ],
+      child: FittedBox(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _text('$totalChapters capítulos', context),
+            _separator(context),
+            _text(type, context),
+            _separator(context),
+            _text(scan.value, context),
+          ],
+        ),
       ),
     );
   }

@@ -74,7 +74,7 @@ class BookWidget extends StatelessWidget {
 
   Widget image(
     String src, {
-    Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
+    Widget Function(BuildContext, String, dynamic)? errorBuilder,
   }) {
     if (src.contains('base64')) {
       final replacedSrc = src.split(';base64,').last;
@@ -88,15 +88,11 @@ class BookWidget extends StatelessWidget {
       );
     }
 
-    return Image(
+    return CachedNetworkImage(
       fit: BoxFit.cover,
-      image: CachedNetworkImageProvider(
-        src,
-        headers: book.scan.repository.headers,
-        maxHeight: bookHeight.ceil(),
-        maxWidth: bookWidth.ceil(),
-      ),
-      errorBuilder: errorBuilder,
+      imageUrl: src,
+      errorWidget: errorBuilder,
+      httpHeaders: book.scan.repository.headers,
     );
   }
 

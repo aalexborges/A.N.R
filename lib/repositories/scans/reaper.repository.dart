@@ -20,11 +20,13 @@ class ReaperRepository extends ScanRepositoryBase {
   Future<List<Book>> lastAdded() async {
     final items = <Book>[];
 
-    try {
+    await _tryAllURLs((baseURL, resolve) async {
+      _updateCache(baseURL);
+
       final response = await _dio.get(baseURL, options: _cache.cacheOptions);
       final $ = parse(response.data);
 
-      const elementsSelector = '.main-series .grid.grid-cols-2 > div';
+      const elementsSelector = '.container .grid.grid-cols-2 > div';
       for (Element element in $.querySelectorAll(elementsSelector)) {
         final scraping = ScrapingUtil(element);
 
@@ -44,10 +46,10 @@ class ReaperRepository extends ScanRepositoryBase {
         ));
       }
 
-      return items;
-    } catch (_) {
-      return items;
-    }
+      if (items.isNotEmpty) await resolve();
+    });
+
+    return items;
   }
 
   @override

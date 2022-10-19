@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:A.N.R/constants/scans.dart';
 import 'package:A.N.R/models/book.model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +20,7 @@ class BookAppBarBackgroundWidget extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned.fill(
-          child: bgImage(imageURL: book.imageURL, imageURL2: book.imageURL2),
-        ),
+        Positioned.fill(child: bgImage()),
         Positioned.fill(
           top: 0,
           bottom: -1,
@@ -63,9 +62,9 @@ class BookAppBarBackgroundWidget extends StatelessWidget {
     );
   }
 
-  Widget bgImage({required String imageURL, String? imageURL2}) {
-    if (imageURL.contains('base64')) {
-      final replacedSrc = imageURL.split(';base64,').last;
+  Widget bgImage() {
+    if (book.imageURL.contains('base64')) {
+      final replacedSrc = book.imageURL.split(';base64,').last;
       final bytes = base64.decode(replacedSrc);
 
       return Image.memory(
@@ -77,6 +76,7 @@ class BookAppBarBackgroundWidget extends StatelessWidget {
     return CachedNetworkImage(
       fit: BoxFit.cover,
       imageUrl: book.imageURL,
+      httpHeaders: book.scan.repository.headers,
       errorWidget: (context, url, error) {
         final imageURL2 = book.imageURL2;
 
