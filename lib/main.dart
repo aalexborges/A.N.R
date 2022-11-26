@@ -1,17 +1,13 @@
 import 'package:A.N.R/firebase_options.dart';
 import 'package:A.N.R/routes.dart';
-import 'package:A.N.R/services/worker.service.dart';
-import 'package:A.N.R/store/download.store.dart';
 import 'package:A.N.R/store/favorites.store.dart';
 import 'package:A.N.R/store/historic.store.dart';
-import 'package:A.N.R/utils/download.util.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
-import 'package:workmanager/workmanager.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +15,6 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseDatabase.instance.setPersistenceEnabled(true);
-
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
 
   runApp(const MyApp());
 }
@@ -51,9 +45,6 @@ class _MyAppState extends State<MyApp> {
       }
     });
 
-    // To continue the downloads
-    DownloadUtil.start();
-
     FlutterNativeSplash.remove();
     super.initState();
   }
@@ -64,7 +55,6 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider(create: (_) => _historicStore),
         Provider(create: (_) => _favoritesStore),
-        Provider(create: (_) => DownloadStore()),
       ],
       child: MaterialApp.router(
         title: 'A.N.R',

@@ -5,8 +5,7 @@ import 'package:A.N.R/repositories/scans/scan.repository.dart';
 enum Scans {
   NEOX,
   RANDOM,
-  MARK,
-  CRONOS,
+  GLORIOUS,
   PRISMA,
   REAPER,
   OLYMPUS,
@@ -24,11 +23,8 @@ extension ScansExtension on Scans {
       case Scans.RANDOM:
         return 'Random';
 
-      case Scans.MARK:
-        return 'Mark';
-
-      case Scans.CRONOS:
-        return 'Cronos';
+      case Scans.GLORIOUS:
+        return 'Glorious';
 
       case Scans.PRISMA:
         return 'Prisma';
@@ -58,11 +54,8 @@ extension ScansExtension on Scans {
       case Scans.RANDOM:
         return RandomRepository();
 
-      case Scans.MARK:
-        return MarkRepository();
-
-      case Scans.CRONOS:
-        return CronosRepository();
+      case Scans.GLORIOUS:
+        return GloriousRepository();
 
       case Scans.PRISMA:
         return PrismaRepository();

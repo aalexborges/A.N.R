@@ -15,10 +15,9 @@ import 'package:dio_http_cache/dio_http_cache.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
-part 'cronos.repository.dart';
+part 'glorious.repository.dart';
 part 'hunters.repository.dart';
 part 'manga_host.repository.dart';
-part 'mark.repository.dart';
 part 'muito_manga.repository.dart';
 part 'neox.repository.dart';
 part 'olympus.repository.dart';
@@ -32,7 +31,7 @@ abstract class ScanRepositoryBase {
 
   String get baseURL => '';
 
-  List<String> get baseURLs => [];
+  List<String> get baseURLs => ['https://markscans.online'];
 
   Future<List<Book>> lastAdded() async => [];
 
@@ -52,7 +51,7 @@ abstract class ScanRepositoryBase {
     _cache = DioCache(
       url: url,
       subKey: subKey,
-      options: Options(headers: headers),
+      options: Options(headers: headers, followRedirects: true),
     );
 
     _dio = Dio();

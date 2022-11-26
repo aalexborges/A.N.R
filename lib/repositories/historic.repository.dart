@@ -32,7 +32,7 @@ class HistoricRepository {
 
       for (DataSnapshot item in items) {
         final read = double.tryParse(item.value.toString()) ?? 0;
-        chapters[item.key!] = read > 100 ? 100 : read;
+        chapters[item.key!.replaceAll('i__', '')] = read > 100 ? 100 : read;
       }
 
       historic[data.key!] = chapters;
@@ -48,7 +48,7 @@ class HistoricRepository {
   }) async {
     if (_ref == null) throw Error();
 
-    final chapterRef = _ref!.child(bookId).child(chapterId);
+    final chapterRef = _ref!.child(bookId).child('i__$chapterId');
     await chapterRef.set(read);
   }
 }

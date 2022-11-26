@@ -1,21 +1,13 @@
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:A.N.R/constants/order.dart';
-import 'package:A.N.R/constants/ports.dart';
 import 'package:A.N.R/constants/routes_path.dart';
 import 'package:A.N.R/models/book.model.dart';
-import 'package:A.N.R/models/book_download.model.dart';
-import 'package:A.N.R/models/download_update.dart';
 import 'package:A.N.R/screens/about.screen.dart';
 import 'package:A.N.R/screens/reader.screen.dart';
 import 'package:A.N.R/store/book.store.dart';
-import 'package:A.N.R/store/download.store.dart';
 import 'package:A.N.R/widgets/book_app_bar_background.widget.dart';
 import 'package:A.N.R/widgets/book_chapters_title.widget.dart';
 import 'package:A.N.R/widgets/book_subtitle_infos.widget.dart';
 import 'package:A.N.R/widgets/chapter_list_tile.widget.dart';
-import 'package:A.N.R/widgets/download_all_button_widget.dart';
 import 'package:A.N.R/widgets/favorite_button.widget.dart';
 import 'package:A.N.R/widgets/read_button.widget.dart';
 import 'package:A.N.R/widgets/sinopse.widget.dart';
@@ -23,7 +15,6 @@ import 'package:A.N.R/widgets/to_about_book_button.widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
 class BookScreen extends StatefulWidget {
   final Book book;
@@ -36,9 +27,7 @@ class BookScreen extends StatefulWidget {
 
 class _BookScreenState extends State<BookScreen> {
   late BookStore _store;
-  late DownloadStore _downloadStore;
 
-  final _port = ReceivePort();
   final _scroll = ScrollController();
 
   void _scrollListener() {
@@ -48,14 +37,6 @@ class _BookScreenState extends State<BookScreen> {
       _store.setPinnedTitle(true);
     } else if (_store.pinnedTitle && _scroll.offset < height) {
       _store.setPinnedTitle(false);
-    }
-  }
-
-  void _downloadedListener(dynamic message) {
-    final data = message as DownloadUpdate;
-
-    if (data.bookId == widget.book.id) {
-      _downloadStore.addFinishedChapter(data.chapterId);
     }
   }
 
@@ -73,28 +54,12 @@ class _BookScreenState extends State<BookScreen> {
 
     _scroll.addListener(_scrollListener);
 
-    IsolateNameServer.registerPortWithName(_port.sendPort, Ports.DOWNLOADED);
-    _port.listen(_downloadedListener);
-
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _downloadStore = Provider.of<DownloadStore>(context)
-      ..populate(widget.book.id);
-
-    super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     _scroll.removeListener(_scrollListener);
-    _port.close();
-
-    IsolateNameServer.removePortNameMapping(Ports.DOWNLOADED);
-    _downloadStore.dispose();
-
     super.dispose();
   }
 
@@ -127,7 +92,8 @@ class _BookScreenState extends State<BookScreen> {
                     subtitle: Observer(builder: (context) {
                       return BookSubtitleInfosWidget(
                         scan: widget.book.scan,
-                        type: _store.data?.type ?? 'Tipo Desconhecido',
+                        type: _store.data?.type?.toUpperCase() ??
+                            'Tipo Desconhecido',
                         totalChapters: _store.data?.chapters.length ?? 0,
                         isLoading: _store.isLoading,
                       );
@@ -167,10 +133,6 @@ class _BookScreenState extends State<BookScreen> {
                         ),
                         BookChaptersTitleWidget(
                           onChangeOrder: _store.toggleOrder,
-                          secondary: DownloadAllButtonWidget(
-                            book: widget.book,
-                            bookData: _store.data,
-                          ),
                         ),
                       ],
                     ),
@@ -199,16 +161,6 @@ class _BookScreenState extends State<BookScreen> {
                           ),
                         );
                       },
-                      downloadBook: BookDownload(
-                        scan: widget.book.scan,
-                        url: widget.book.url,
-                        name: widget.book.name,
-                        type: _store.data?.type ?? widget.book.type,
-                        sinopse: _store.data!.sinopse,
-                        imageURL: widget.book.imageURL,
-                        imageURL2: widget.book.imageURL2,
-                        categories: _store.data!.categories,
-                      ),
                     );
                   },
                   childCount: _store.chapters.length,

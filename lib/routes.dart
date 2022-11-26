@@ -7,6 +7,7 @@ import 'package:A.N.R/screens/home.screen.dart';
 import 'package:A.N.R/screens/login.screen.dart';
 import 'package:A.N.R/screens/reader.screen.dart';
 import 'package:A.N.R/screens/search.screen.dart';
+import 'package:A.N.R/utils/go_router_refresh_stream.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 
@@ -15,7 +16,7 @@ final routes = GoRouter(
   refreshListenable: GoRouterRefreshStream(
     FirebaseAuth.instance.authStateChanges(),
   ),
-  redirect: (state) {
+  redirect: (context, state) {
     final isAuthenticated = FirebaseAuth.instance.currentUser != null;
     final isLoginRoute = state.subloc == RoutesPath.LOGIN;
 

@@ -1,10 +1,17 @@
+import 'package:A.N.R/constants/old_scans.dart';
 import 'package:A.N.R/constants/scans.dart';
 
 class ScanUtil {
   static Scans byValue(String value) {
-    return Scans.values.singleWhere(
-      (scan) => scan.value.toLowerCase() == value.toLowerCase().trim(),
-    );
+    try {
+      return Scans.values.singleWhere((scan) {
+        return scan.value.toLowerCase() == value.toLowerCase().trim();
+      });
+    } catch (_) {
+      return OldScans.values.singleWhere((oldScan) {
+        return oldScan.value.toLowerCase() == value.toLowerCase().trim();
+      }).current;
+    }
   }
 
   static Scans byURL(String url) {

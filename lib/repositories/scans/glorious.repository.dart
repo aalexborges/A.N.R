@@ -1,10 +1,16 @@
 part of 'scan.repository.dart';
 
-class CronosRepository extends ScanRepositoryBase {
+class GloriousRepository extends ScanRepositoryBase {
   @override
-  final String baseURL = 'https://cronosscan.net';
+  final String baseURL = 'https://gloriousscan.com';
 
-  CronosRepository() {
+  @override
+  final baseURLs = <String>[
+    'https://gloriousscan.com',
+    'https://cronosscan.net',
+  ];
+
+  GloriousRepository() {
     _cache = DioCache(url: baseURL);
     _dio = Dio()..interceptors.add(_cache.cache.interceptor);
   }
@@ -31,7 +37,7 @@ class CronosRepository extends ScanRepositoryBase {
         items.add(Book(
           url: url,
           name: name,
-          scan: Scans.CRONOS,
+          scan: Scans.GLORIOUS,
           imageURL: image1,
           imageURL2: image2,
         ));
@@ -68,7 +74,7 @@ class CronosRepository extends ScanRepositoryBase {
       books.add(Book(
         url: url,
         name: name,
-        scan: Scans.CRONOS,
+        scan: Scans.GLORIOUS,
         imageURL: image1,
         imageURL2: image2,
       ));
@@ -101,7 +107,7 @@ class CronosRepository extends ScanRepositoryBase {
       final scraping = ScrapingUtil(element);
       final key = scraping.getByText(selector: 'h5').toLowerCase();
 
-      if (key == 'tipo') {
+      if (key == 'tipo' || key == 'type') {
         type = scraping.getByText(selector: '.summary-content');
       }
     });
@@ -110,7 +116,7 @@ class CronosRepository extends ScanRepositoryBase {
 
     // Sinopse -------------------------------------------------
 
-    final sinopse = $.querySelector('.summary__content')?.text.trim() ?? '';
+    final sinopse = $.querySelector('.sinopse')?.text.trim() ?? '';
 
     // Chapters ------------------------------------------------
 
@@ -120,22 +126,18 @@ class CronosRepository extends ScanRepositoryBase {
     final id = (idElement?.attributes['data-id'] ?? '').trim();
 
     try {
-      final String cURL = '$baseURL/wp-admin/admin-ajax.php';
+      final String cURL = '${book.url}ajax/chapters/';
       final cache = DioCache(
         url: cURL,
         subKey: id,
         options: Options(
           contentType: 'application/x-www-form-urlencoded;charset=UTF-8',
-          headers: {'origin': baseURL, 'referer': book.url},
+          headers: {'origin': book.url, 'referer': book.url},
         ),
       );
 
       final response = await _dio.post(
         cURL,
-        data: {
-          'action': 'manga_get_chapters',
-          'manga': id,
-        },
         options: cache.cacheOptions,
       );
 
