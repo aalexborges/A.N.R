@@ -18,6 +18,7 @@ import 'package:html/parser.dart';
 part 'glorious.repository.dart';
 part 'hunters.repository.dart';
 part 'manga_host.repository.dart';
+part 'manga_livre.repository.dart';
 part 'muito_manga.repository.dart';
 part 'neox.repository.dart';
 part 'olympus.repository.dart';

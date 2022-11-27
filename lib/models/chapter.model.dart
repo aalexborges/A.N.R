@@ -7,17 +7,14 @@ class Chapter {
   final String bookId;
   final double read;
 
-  /* Download finished */
-  final bool finished;
+  final int? secondaryId;
 
   const Chapter({
     required this.url,
     required this.name,
     required this.bookId,
     this.read = 0,
-
-    /* Download finished */
-    this.finished = false,
+    this.secondaryId,
   });
 
   String get id {
@@ -57,12 +54,14 @@ class Chapter {
     String? name,
     String? bookId,
     double? read,
+    int? secondaryId,
   }) {
     return Chapter(
       url: url ?? this.url,
       name: name ?? this.name,
       bookId: bookId ?? this.bookId,
       read: read ?? this.read,
+      secondaryId: secondaryId ?? this.secondaryId,
     );
   }
 
@@ -71,6 +70,7 @@ class Chapter {
       'url': url,
       'name': name,
       'bookId': bookId,
+      'secondaryId': secondaryId,
     };
   }
 
@@ -80,7 +80,7 @@ class Chapter {
       name: map['name'] as String,
       bookId: map['bookId'] as String,
       read: map['read'] == null ? 0 : map['read'] as double,
-      finished: map['finished'] == 0 ? false : true,
+      secondaryId: map['secondaryId'] as int?,
     );
   }
 
@@ -91,7 +91,7 @@ class Chapter {
 
   @override
   String toString() {
-    return 'Chapter(url: $url, name: $name, bookId: $bookId, read: $read, finished: $finished)';
+    return 'Chapter(url: $url, name: $name, bookId: $bookId, read: $read, secondaryId: $secondaryId)';
   }
 
   @override
@@ -102,7 +102,7 @@ class Chapter {
         other.name == name &&
         other.bookId == bookId &&
         other.read == read &&
-        other.finished == finished;
+        other.secondaryId == secondaryId;
   }
 
   @override
@@ -111,6 +111,6 @@ class Chapter {
         name.hashCode ^
         bookId.hashCode ^
         read.hashCode ^
-        finished.hashCode;
+        secondaryId.hashCode;
   }
 }

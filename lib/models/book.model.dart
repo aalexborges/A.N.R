@@ -14,6 +14,7 @@ class Book {
   final String imageURL;
 
   final String? imageURL2;
+  final int? serieId;
   final String? type;
 
   Book({
@@ -22,6 +23,7 @@ class Book {
     required this.name,
     required this.imageURL,
     this.imageURL2,
+    this.serieId,
     this.type,
   });
 
@@ -34,6 +36,7 @@ class Book {
     String? imageURL,
     String? imageURL2,
     String? type,
+    int? serieId,
   }) {
     return Book(
       scan: scan ?? this.scan,
@@ -41,6 +44,7 @@ class Book {
       name: name ?? this.name,
       imageURL: imageURL ?? this.imageURL,
       imageURL2: imageURL2 ?? this.imageURL2,
+      serieId: serieId ?? this.serieId,
       type: type ?? this.type,
     );
   }
@@ -52,6 +56,7 @@ class Book {
       'name': name,
       'imageURL': imageURL,
       'imageURL2': imageURL2,
+      'serieId': serieId,
       'type': type,
     };
   }
@@ -65,6 +70,7 @@ class Book {
       name: map['name'] as String,
       imageURL: map['imageURL'] as String,
       imageURL2: map['imageURL2'] != null ? map['imageURL2'] as String : null,
+      serieId: map['serieId'] != null ? map['serieId'] as int : null,
       type: map['type'] != null ? map['type'] as String : map['tag'] as String?,
     );
   }
@@ -76,7 +82,7 @@ class Book {
 
   @override
   String toString() {
-    return 'Book(scan: ${scan.value}, url: $url, name: $name, imageURL: $imageURL, imageURL2: $imageURL2, type: $type)';
+    return 'Book(scan: ${scan.value}, url: $url, name: $name, imageURL: $imageURL, imageURL2: $imageURL2, serieId: $serieId, type: $type)';
   }
 
   @override
@@ -88,6 +94,7 @@ class Book {
         other.name == name &&
         other.imageURL == imageURL &&
         other.imageURL2 == imageURL2 &&
+        other.serieId == serieId &&
         other.type == type;
   }
 
@@ -98,6 +105,7 @@ class Book {
         name.hashCode ^
         imageURL.hashCode ^
         imageURL2.hashCode ^
+        serieId.hashCode ^
         type.hashCode;
   }
 }

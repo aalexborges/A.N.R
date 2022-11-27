@@ -11,6 +11,7 @@ enum Scans {
   OLYMPUS,
   MANGA_HOST,
   MUITO_MANGA,
+  MANGA_LIVRE,
   HUNTERS,
 }
 
@@ -40,6 +41,9 @@ extension ScansExtension on Scans {
 
       case Scans.MUITO_MANGA:
         return 'Muito Mangá';
+
+      case Scans.MANGA_LIVRE:
+        return 'Mangá Livre';
 
       case Scans.HUNTERS:
         return 'Hunters';
@@ -71,6 +75,9 @@ extension ScansExtension on Scans {
 
       case Scans.MUITO_MANGA:
         return MuitoMangaRepository();
+
+      case Scans.MANGA_LIVRE:
+        return MangaLivreRepository();
 
       case Scans.HUNTERS:
         return HuntersRepository();
