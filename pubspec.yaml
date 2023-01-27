@@ -107,14 +107,6 @@ flutter:
           weight: 400
         - asset: assets/fonts/Poppins-SemiBold.ttf
           weight: 600
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
 
 flutter_native_splash:
   color: "#1B1B1F"

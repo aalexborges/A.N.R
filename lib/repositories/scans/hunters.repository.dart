@@ -2,7 +2,13 @@ part of 'scan.repository.dart';
 
 class HuntersRepository extends ScanRepositoryBase {
   @override
-  final String baseURL = 'https://huntersscan.xyz';
+  final String baseURL = 'https://huntersscan.net';
+
+  @override
+  final baseURLs = <String>[
+    'https://huntersscan.net',
+    'https://huntersscan.xyz'
+  ];
 
   HuntersRepository() {
     _cache = DioCache(url: baseURL);
