@@ -41,6 +41,8 @@ dependencies:
   firebase_core: ^2.4.1
   google_sign_in: ^5.4.4
   cached_network_image: ^3.2.3
+  slugify: ^2.0.0
+  firebase_database: ^10.0.9
 
 dev_dependencies:
   flutter_test:
