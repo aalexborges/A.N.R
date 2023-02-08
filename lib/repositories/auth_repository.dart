@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRepository {
@@ -9,7 +8,7 @@ class AuthRepository {
 
   late final GoogleSignIn _google;
 
-  Future<void> signIn(BuildContext context) async {
+  Future<void> signIn() async {
     final googleUser = await _google.signIn();
 
     if (googleUser != null) {

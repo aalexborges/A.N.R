@@ -1,3 +1,4 @@
+import 'package:anr/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -19,7 +20,7 @@ class AuthScreen extends StatelessWidget {
                 child: SvgPicture.asset('assets/images/logo.svg', width: 104),
               ),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () => authRepository.signIn(),
                 icon: SvgPicture.asset('assets/images/google.svg', width: 24),
                 label: const Text('Entrar com o Google'),
               ),
