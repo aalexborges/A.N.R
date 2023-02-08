@@ -1,5 +1,6 @@
 import 'package:anr/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class AuthScreen extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () => authRepository.signIn(),
                 icon: SvgPicture.asset('assets/images/google.svg', width: 24),
-                label: const Text('Entrar com o Google'),
+                label: Text(AppLocalizations.of(context)!.signInGoogle),
               ),
             ],
           ),

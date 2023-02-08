@@ -5,6 +5,8 @@ import 'package:anr/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get_it/get_it.dart';
 
 Future<void> main() async {
@@ -31,6 +33,13 @@ class MyApp extends StatelessWidget {
       routeInformationProvider: appRouter.routeInformationProvider,
       routeInformationParser: appRouter.routeInformationParser,
       routerDelegate: appRouter.routerDelegate,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en'), Locale('pt', 'BR')],
     );
   }
 }
