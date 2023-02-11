@@ -1,4 +1,5 @@
 import 'package:anr/models/book.dart';
+import 'package:anr/widgets/shimmer_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -12,10 +13,12 @@ class BookListElement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          color: Theme.of(context).colorScheme.secondary,
+      child: Card(
+        color: Theme.of(context).colorScheme.surfaceVariant,
+        elevation: 0,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        semanticContainer: true,
+        child: SizedBox(
           width: BookListElementSize.width,
           height: BookListElementSize.height,
           child: Stack(
@@ -28,30 +31,27 @@ class BookListElement extends StatelessWidget {
                   imageUrl: book.src,
                   maxWidthDiskCache: BookListElementSize.cacheMaxWidth,
                   maxHeightDiskCache: BookListElementSize.cacheMaxHeight,
+                  placeholder: (context, url) => const BookListElementShimmer(),
                 ),
               ),
               Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BookListElementFloatItem(
-                        hidden: book.type == null,
-                        child: Text(
-                          book.type.toString().trim().toUpperCase(),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-                          maxLines: 1,
-                        ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BookListElementFloatItem(
+                      hidden: book.type == null,
+                      child: Text(
+                        book.type.toString().trim().toUpperCase(),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                        maxLines: 1,
                       ),
-                      BookListElementFloatItem(
-                        padding: const EdgeInsets.all(4),
-                        borderRadius: BorderRadius.circular(100),
-                        child: Icon(Icons.favorite, size: 20, color: Colors.red.withOpacity(0.8)),
-                      ),
-                    ],
-                  ),
+                    ),
+                    BookListElementFloatItem(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(Icons.favorite, size: 18, color: Colors.red.withOpacity(0.8)),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -63,25 +63,35 @@ class BookListElement extends StatelessWidget {
 }
 
 class BookListElementFloatItem extends StatelessWidget {
-  const BookListElementFloatItem({super.key, this.child, this.padding, this.borderRadius, this.hidden = false});
+  const BookListElementFloatItem({super.key, this.child, this.padding, this.hidden = false});
 
   final bool hidden;
   final Widget? child;
   final EdgeInsetsGeometry? padding;
-  final BorderRadiusGeometry? borderRadius;
 
   @override
   Widget build(BuildContext context) {
     if (hidden) return const SizedBox();
 
-    return Container(
-      padding: padding ?? const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      constraints: const BoxConstraints(maxWidth: BookListElementSize.width - 8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.72),
-        borderRadius: borderRadius ?? BorderRadius.circular(6),
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(80)),
+      child: Padding(padding: padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: child),
+    );
+  }
+}
+
+class BookListElementShimmer extends StatelessWidget {
+  const BookListElementShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const ShimmerItem(
+      child: Card(
+        child: SizedBox(
+          width: BookListElementSize.width,
+          height: BookListElementSize.height,
+        ),
       ),
-      child: FittedBox(child: child),
     );
   }
 }
