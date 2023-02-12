@@ -1,5 +1,7 @@
 {
   "signInGoogle": "Sign in with Google",
-  "searchBook": "Search book...",
-  "favorites": "Favorites"
+  "searchBook": "{scan} - Search book...",
+  "favorites": "Favorites",
+  "enterBookName": "Enter book name",
+  "searchNotResult": "Oops! There were no results for your search."
 }
