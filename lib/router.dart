@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:anr/screens/auth_screen.dart';
+import 'package:anr/screens/favorites_screen.dart';
 import 'package:anr/screens/home_screen.dart';
+import 'package:anr/screens/search_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +22,8 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(path: ScreenPaths.auth, builder: (ctx, state) => const AuthScreen()),
     GoRoute(path: ScreenPaths.home, builder: (ctx, state) => const HomeScreen()),
+    GoRoute(path: ScreenPaths.search, builder: (ctx, state) => SearchScreen()),
+    GoRoute(path: ScreenPaths.favorites, builder: (ctx, state) => const FavoritesScreen()),
   ],
 );
 
