@@ -1,6 +1,7 @@
 import 'package:anr/color_schemes.g.dart';
 import 'package:anr/firebase_options.dart';
 import 'package:anr/repositories/auth_repository.dart';
+import 'package:anr/repositories/book_repository.dart';
 import 'package:anr/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -46,6 +47,8 @@ class MyApp extends StatelessWidget {
 
 void registerSingletons() {
   GetIt.I.registerSingleton<AuthRepository>(AuthRepository());
+  GetIt.I.registerLazySingleton<BookRepository>(() => const BookRepository());
 }
 
 AuthRepository get authRepository => GetIt.I.get<AuthRepository>();
+BookRepository get bookRepository => GetIt.I.get<BookRepository>();
