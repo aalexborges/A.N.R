@@ -7,7 +7,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 class SearchScreen extends StatelessWidget {
   SearchScreen({super.key});
 
-  final Search store = Search();
+  final SearchStore store = SearchStore();
 
   @override
   Widget build(BuildContext context) {
