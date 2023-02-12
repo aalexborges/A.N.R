@@ -1,4 +1,5 @@
 import 'package:anr/models/book.dart';
+import 'package:anr/models/scan.dart';
 import 'package:anr/router.dart';
 import 'package:anr/widgets/book_list_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -34,6 +35,7 @@ class HomeScreen extends StatelessWidget {
           src: 'https://neoxscans.net/wp-content/uploads/2022/05/TheWorldAfterTheEnd-175x238.jpg',
           name: 'Test',
           path: '/test',
+          scan: Scan.neox,
         ),
       ),
     );
