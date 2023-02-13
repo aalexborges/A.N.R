@@ -1,4 +1,4 @@
-part of 'scan_base_repository.dart';
+part of '../scan_base_repository.dart';
 
 class NeoxRepository extends ScanBaseRepository {
   NeoxRepository();

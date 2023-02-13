@@ -11,7 +11,16 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-part 'neox_repository.dart';
+part 'scans/glorious_repository.dart';
+part 'scans/hunters_repository.dart';
+part 'scans/manga_host_repository.dart';
+part 'scans/manga_livre_repository.dart';
+part 'scans/muito_manga_repository.dart';
+part 'scans/neox_repository.dart';
+part 'scans/olympus_repository.dart';
+part 'scans/prisma_repository.dart';
+part 'scans/random_repository.dart';
+part 'scans/reaper_repository.dart';
 
 abstract class ScanBaseRepository {
   List<String> get baseURLs => [];
