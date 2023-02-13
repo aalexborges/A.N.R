@@ -4,9 +4,9 @@ import 'package:mobx/mobx.dart';
 part 'search_store.g.dart';
 
 // ignore: library_private_types_in_public_api
-class SearchStore = _Search with _$Search;
+class SearchStore = _SearchStore with _$SearchStore;
 
-abstract class _Search with Store {
+abstract class _SearchStore with Store {
   @observable
   bool isLoading = false;
 

@@ -6,9 +6,9 @@ import 'package:mobx/mobx.dart';
 part 'home_store.g.dart';
 
 // ignore: library_private_types_in_public_api
-class HomeStore = _Home with _$Home;
+class HomeStore = _HomeStore with _$HomeStore;
 
-abstract class _Home with Store {
+abstract class _HomeStore with Store {
   @observable
   bool isLoading = true;
 
@@ -16,7 +16,7 @@ abstract class _Home with Store {
   ObservableMap<Scan, List<Book>> lastAdded = ObservableMap();
 
   @action
-  void getLatestBooksAdded(bool loading) async {
+  Future<void> getLatestBooksAdded(bool loading) async {
     final data = await bookRepository.lastAdded;
     lastAdded = ObservableMap()..addAll(data);
 
