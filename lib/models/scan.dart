@@ -44,23 +44,23 @@ extension ScansExtension on Scan {
       case Scan.neox:
         return NeoxRepository();
       case Scan.random:
-        return NeoxRepository();
+        return RandomRepository();
       case Scan.glorious:
-        return NeoxRepository();
+        return GloriousRepository();
       case Scan.prisma:
-        return NeoxRepository();
+        return PrismaRepository();
       case Scan.reaper:
-        return NeoxRepository();
+        return ReaperRepository();
       case Scan.olympus:
-        return NeoxRepository();
+        return OlympusRepository();
       case Scan.mangaHost:
-        return NeoxRepository();
+        return MangaHostRepository();
       case Scan.muitoManga:
-        return NeoxRepository();
+        return MuitoMangaRepository();
       case Scan.mangaLivre:
-        return NeoxRepository();
+        return MangaLivreRepository();
       case Scan.hunters:
-        return NeoxRepository();
+        return HuntersRepository();
     }
   }
 }
