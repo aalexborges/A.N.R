@@ -16,7 +16,7 @@ abstract class _HomeStore with Store {
   ObservableMap<Scan, List<Book>> lastAdded = ObservableMap();
 
   @action
-  Future<void> getLatestBooksAdded(bool loading) async {
+  Future<void> getLatestBooksAdded() async {
     final data = await bookRepository.lastAdded;
     lastAdded = ObservableMap()..addAll(data);
 

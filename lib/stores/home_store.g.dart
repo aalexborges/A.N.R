@@ -45,9 +45,9 @@ mixin _$HomeStore on _HomeStore, Store {
       AsyncAction('_HomeStore.getLatestBooksAdded', context: context);
 
   @override
-  Future<void> getLatestBooksAdded(bool loading) {
+  Future<void> getLatestBooksAdded() {
     return _$getLatestBooksAddedAsyncAction
-        .run(() => super.getLatestBooksAdded(loading));
+        .run(() => super.getLatestBooksAdded());
   }
 
   @override
