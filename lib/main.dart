@@ -1,4 +1,4 @@
-import 'package:anr/color_schemes.g.dart';
+import 'package:anr/color_schemes.dart';
 import 'package:anr/firebase_options.dart';
 import 'package:anr/repositories/auth_repository.dart';
 import 'package:anr/repositories/book_repository.dart';
