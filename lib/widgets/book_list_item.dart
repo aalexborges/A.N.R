@@ -106,8 +106,6 @@ abstract class BookListElementSize {
   static const cacheMaxHeight = 254;
 
   static const sliverGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
-    mainAxisSpacing: 8,
-    crossAxisSpacing: 8,
     childAspectRatio: 0.72,
     maxCrossAxisExtent: height,
   );
