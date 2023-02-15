@@ -29,11 +29,11 @@ extension ScansExtension on Scan {
       case Scan.olympus:
         return 'olympus';
       case Scan.mangaHost:
-        return 'mangaHost';
+        return 'manga host';
       case Scan.muitoManga:
-        return 'muitoManga';
+        return 'muito manga';
       case Scan.mangaLivre:
-        return 'mangaLivre';
+        return 'manga livre';
       case Scan.hunters:
         return 'hunters';
     }
