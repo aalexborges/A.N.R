@@ -22,7 +22,7 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(path: ScreenPaths.auth, builder: (ctx, state) => const AuthScreen()),
     GoRoute(path: ScreenPaths.home, builder: (ctx, state) => const HomeScreen()),
-    GoRoute(path: ScreenPaths.search, builder: (ctx, state) => SearchScreen()),
+    GoRoute(path: ScreenPaths.search, builder: (ctx, state) => const SearchScreen()),
     GoRoute(path: ScreenPaths.favorites, builder: (ctx, state) => const FavoritesScreen()),
   ],
 );
