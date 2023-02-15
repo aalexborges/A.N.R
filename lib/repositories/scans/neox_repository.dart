@@ -15,7 +15,7 @@ class NeoxRepository extends ScanBaseRepository {
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final response = await dio(baseURL).get(baseURL);
+        final response = await dio.get(baseURL);
         final $ = parse(response.data);
 
         for (Element element in $.querySelectorAll('#loop-content .row div.page-item-detail')) {
@@ -52,7 +52,7 @@ class NeoxRepository extends ScanBaseRepository {
         final subKey = '?s=$value&post_type=wp-manga';
         final url = '$baseURL/$subKey';
 
-        final response = await dio(baseURL).get(url);
+        final response = await dio.get(url);
         final $ = parse(response.data);
 
         for (Element element in $.querySelectorAll('.c-tabs-item div.row')) {
