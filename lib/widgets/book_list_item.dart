@@ -1,4 +1,5 @@
 import 'package:anr/models/book.dart';
+import 'package:anr/models/scan.dart';
 import 'package:anr/widgets/shimmer_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,7 @@ class BookListElement extends StatelessWidget {
                   fit: BoxFit.cover,
                   cacheKey: book.slug,
                   imageUrl: book.src,
+                  httpHeaders: book.scan.repository.headers,
                   maxWidthDiskCache: BookListElementSize.cacheMaxWidth,
                   maxHeightDiskCache: BookListElementSize.cacheMaxHeight,
                   placeholder: (context, url) => const BookListElementShimmer(),
