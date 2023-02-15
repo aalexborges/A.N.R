@@ -9,7 +9,6 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 part 'scans/glorious_repository.dart';
 part 'scans/hunters_repository.dart';
@@ -33,11 +32,11 @@ abstract class ScanBaseRepository {
 
   Future<BookData> data(Book book) async => const BookData(sinopse: '', chapters: [], categories: []);
 
-  Dio dio(String baseURL) {
+  Dio get dio {
     final client = Dio(BaseOptions(headers: headers));
     final cookieJar = CookieJar();
 
-    client.interceptors.addAll([PrettyDioLogger(), CookieManager(cookieJar)]);
+    client.interceptors.addAll([CookieManager(cookieJar)]);
 
     return client;
   }
