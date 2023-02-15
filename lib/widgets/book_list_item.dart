@@ -43,16 +43,14 @@ class BookListElement extends StatelessWidget {
                   children: [
                     BookListElementFloatItem(
                       hidden: book.type == null,
-                      child: Text(
-                        book.type.toString().trim().toUpperCase(),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
-                        maxLines: 1,
+                      child: FittedBox(
+                        child: Text(
+                          book.type.toString().trim().toUpperCase(),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                          maxLines: 1,
+                        ),
                       ),
                     ),
-                    BookListElementFloatItem(
-                      padding: const EdgeInsets.all(6),
-                      child: Icon(Icons.favorite, size: 18, color: Colors.red.withOpacity(0.8)),
-                    )
                   ],
                 ),
               ),
