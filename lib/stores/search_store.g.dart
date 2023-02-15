@@ -9,6 +9,21 @@ part of 'search_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$SearchStore on _SearchStore, Store {
+  late final _$scanAtom = Atom(name: '_SearchStore.scan', context: context);
+
+  @override
+  Scan get scan {
+    _$scanAtom.reportRead();
+    return super.scan;
+  }
+
+  @override
+  set scan(Scan value) {
+    _$scanAtom.reportWrite(value, super.scan, () {
+      super.scan = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_SearchStore.isLoading', context: context);
 
@@ -41,15 +56,23 @@ mixin _$SearchStore on _SearchStore, Store {
     });
   }
 
+  late final _$onSearchAsyncAction =
+      AsyncAction('_SearchStore.onSearch', context: context);
+
+  @override
+  Future<void> onSearch(String value) {
+    return _$onSearchAsyncAction.run(() => super.onSearch(value));
+  }
+
   late final _$_SearchStoreActionController =
       ActionController(name: '_SearchStore', context: context);
 
   @override
-  void setIsLoading(bool loading) {
+  void setScan(Scan value) {
     final _$actionInfo = _$_SearchStoreActionController.startAction(
-        name: '_SearchStore.setIsLoading');
+        name: '_SearchStore.setScan');
     try {
-      return super.setIsLoading(loading);
+      return super.setScan(value);
     } finally {
       _$_SearchStoreActionController.endAction(_$actionInfo);
     }
@@ -58,6 +81,7 @@ mixin _$SearchStore on _SearchStore, Store {
   @override
   String toString() {
     return '''
+scan: ${scan},
 isLoading: ${isLoading},
 results: ${results}
     ''';
