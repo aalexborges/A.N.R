@@ -4,5 +4,6 @@
   "searchBook": "{scan} - Buscar livro...",
   "favorites": "Favoritos",
   "enterBookName": "Digite o nome do livro",
-  "searchNotResult": "Ops! Não houve resultados para sua busca."
+  "searchNotResult": "Ops! Não houve resultados para sua busca.",
+  "bookdDataError": "Ops! Algo deu errado ao obter os dados do livro"
 }
