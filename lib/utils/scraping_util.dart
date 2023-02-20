@@ -34,13 +34,13 @@ class ScrapingUtil {
     if (bySrcSet == true) {
       final attribute = $.attributes['data-lazy-srcset'] ?? $.attributes['data-srcset'] ?? $.attributes['srcset'];
 
-      if (attribute == null) return null;
+      if (attribute == null || attribute.contains('no-cover.png')) return null;
       return _bySrcSet(attribute).trim();
     }
 
     final attribute = $.attributes['data-src'] ?? $.attributes['src'];
 
-    if (attribute == null) return null;
+    if (attribute == null || attribute.contains('no-cover.png')) return null;
     return attribute.trim();
   }
 
