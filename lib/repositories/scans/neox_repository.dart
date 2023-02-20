@@ -71,4 +71,42 @@ class NeoxRepository extends ScanBaseRepository {
       },
     );
   }
+
+  @override
+  Future<BookData> data(Book book) async {
+    return _tryAllURLs<BookData>(
+      callback: (baseURL) async {
+        final response = await dio.get(book.path);
+        final $ = parse(response.data);
+
+        // Categories ----------------------------------------------
+
+        final categories = <String>[];
+
+        $.querySelectorAll('.genres-content a').forEach((element) {
+          final category = element.text.trim();
+          if (category.isNotEmpty) categories.add(category);
+        });
+
+        // Type ----------------------------------------------------
+
+        String? type;
+
+        $.querySelectorAll('.post-content_item').forEach((element) {
+          final scraping = ScrapingUtil(element);
+          final key = scraping.getByText(selector: 'h5').toLowerCase();
+
+          if (key == 'tipo') type = scraping.getByText(selector: '.summary-content');
+        });
+
+        type ??= book.type;
+
+        // Sinopse -------------------------------------------------
+
+        final sinopse = $.querySelector('.manga-excerpt')?.text.trim() ?? '';
+
+        return BookData(chapters: List.empty(), sinopse: sinopse, categories: categories);
+      },
+    );
+  }
 }
