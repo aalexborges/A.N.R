@@ -9,6 +9,13 @@ class BookData {
 
   final String? type;
 
+  List<String> subtitleInfos(String? alternativeType) {
+    return List.generate(type == null && alternativeType == null ? 1 : 2, (index) {
+      if (index == 0) return chapters.length.toString();
+      return (type ?? alternativeType)!.trim().toUpperCase();
+    });
+  }
+
   Map<String, dynamic> toMap() {
     return {'chapters': chapters, 'sinopse': sinopse, 'categories': categories, 'type': type};
   }
