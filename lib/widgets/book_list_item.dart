@@ -1,8 +1,10 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/scan.dart';
+import 'package:anr/router.dart';
 import 'package:anr/widgets/shimmer_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class BookListElement extends StatelessWidget {
   const BookListElement({super.key, this.margin, required this.book});
@@ -54,6 +56,12 @@ class BookListElement extends StatelessWidget {
                   ],
                 ),
               ),
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(onTap: () => context.push(ScreenPaths.book, extra: book)),
+                ),
+              )
             ],
           ),
         ),
@@ -102,8 +110,8 @@ abstract class BookListElementSize {
 
   static const size = Size(width, height);
 
-  static const cacheMaxWidth = 180;
-  static const cacheMaxHeight = 254;
+  static const cacheMaxWidth = 324;
+  static const cacheMaxHeight = 464;
 
   static const sliverGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
     childAspectRatio: 0.72,
