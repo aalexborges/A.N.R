@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:anr/models/book.dart';
+import 'package:anr/models/details.dart';
 import 'package:anr/screens/auth_screen.dart';
 import 'package:anr/screens/book_screen.dart';
+import 'package:anr/screens/details_screen.dart';
 import 'package:anr/screens/favorites_screen.dart';
 import 'package:anr/screens/home_screen.dart';
 import 'package:anr/screens/search_screen.dart';
@@ -28,6 +30,7 @@ final appRouter = GoRouter(
     GoRoute(path: ScreenPaths.home, builder: (ctx, state) => const HomeScreen()),
     GoRoute(path: ScreenPaths.book, builder: (ctx, state) => BookScreen(book: state.extra! as Book)),
     GoRoute(path: ScreenPaths.search, builder: (ctx, state) => const SearchScreen()),
+    GoRoute(path: ScreenPaths.details, builder: (ctx, state) => DetailsScreen(details: state.extra! as Details)),
     GoRoute(path: ScreenPaths.favorites, builder: (ctx, state) => const FavoritesScreen()),
   ],
 );
