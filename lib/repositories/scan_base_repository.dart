@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:anr/models/book.dart';
 import 'package:anr/models/book_data.dart';
+import 'package:anr/models/chapter.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/utils/scraping_util.dart';
 import 'package:cookie_jar/cookie_jar.dart';
@@ -54,5 +55,27 @@ abstract class ScanBaseRepository {
 
     if (defaultValue is T) return defaultValue;
     throw error;
+  }
+
+  Future<List<Chapter>> _chapters<T, Y>({
+    required List<T> items,
+    required FutureOr<ChapterBase?> Function(Y item) callback,
+    FutureOr<Y> Function(T value)? transform,
+  }) async {
+    final chapters = <Chapter>[];
+
+    final testes = [];
+
+    for (var i = 0; i < items.length; i++) {
+      final data = (transform == null ? items[i] : await transform(items[i])) as Y;
+      final result = await callback(data);
+
+      if (result == null) throw Error();
+      chapters.add(result.toChapter());
+      testes.add(result.toChapter().id);
+    }
+
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return chapters;
   }
 }
