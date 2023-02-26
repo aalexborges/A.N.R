@@ -5,17 +5,35 @@ import 'package:anr/models/book_data.dart';
 import 'package:anr/models/scan.dart';
 
 class Details {
-  const Details({required this.scan, required this.name, required this.sinopse, required this.categories, this.type});
+  const Details({
+    required this.scan,
+    required this.name,
+    required this.sinopse,
+    required this.categories,
+    required this.lastChapter,
+    required this.chapterLength,
+    this.type,
+  });
 
   final Scan scan;
   final String name;
   final String sinopse;
   final List<String> categories;
+  final String lastChapter;
+  final int chapterLength;
 
   final String? type;
 
   Map<String, dynamic> toMap() {
-    return {'name': name, 'sinopse': sinopse, 'categories': categories, 'scan': scan.value, 'type': type};
+    return {
+      'scan': scan.value,
+      'name': name,
+      'sinopse': sinopse,
+      'categories': categories,
+      'chapterLength': chapterLength,
+      'lastChapter': lastChapter,
+      'type': type,
+    };
   }
 
   String toJson() => json.encode(toMap());
@@ -26,6 +44,8 @@ class Details {
       name: book.name,
       sinopse: data.sinopse,
       categories: data.categories,
+      chapterLength: data.chapters.length,
+      lastChapter: data.chapters.first.chapter,
       type: data.type ?? book.type,
     );
   }
@@ -36,6 +56,8 @@ class Details {
       scan: map['scan'] is String ? scanByValue(map['scan']) : map['scan'],
       sinopse: map['sinopse'],
       categories: map['categories'],
+      chapterLength: map['chapterLength'],
+      lastChapter: map['lastChapter'],
       type: map['type'],
     );
   }
