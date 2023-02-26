@@ -1,11 +1,13 @@
 import 'dart:convert';
 
+import 'package:anr/models/chapter.dart';
+
 class BookData {
   const BookData({required this.chapters, required this.sinopse, required this.categories, this.type});
 
-  final List chapters;
   final String sinopse;
   final List<String> categories;
+  final List<Chapter> chapters;
 
   final String? type;
 
