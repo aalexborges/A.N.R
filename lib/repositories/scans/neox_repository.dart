@@ -105,7 +105,21 @@ class NeoxRepository extends ScanBaseRepository {
 
         final sinopse = $.querySelector('.manga-excerpt')?.text.trim() ?? '';
 
-        return BookData(chapters: List.empty(), sinopse: sinopse, categories: categories);
+        // Chapters ------------------------------------------------
+
+        final chapters = await _chapters(
+          items: $.querySelectorAll('.main li > a'),
+          transform: (value) => ScrapingUtil(value),
+          callback: (item) {
+            final url = item.getURL();
+            final name = item.getByText();
+
+            if (item.hasEmptyOrNull([url, name])) return null;
+            return ChapterBase(name: name, url: url, bookSlug: book.slug);
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories);
       },
     );
   }
