@@ -10,5 +10,11 @@
   "bookdDataError": "Oops! Something went wrong getting book data",
   "toggleFavoriteError": "Something went wrong adding/removing the book from your favorites",
   "continueReading": "Continue reading from chapter {chapter}",
-  "readChapter": "Read chapter {chapter}"
+  "readChapter": "Read chapter {chapter}",
+  "dName": "Name:",
+  "dType": "Type:",
+  "dScan": "Scan:",
+  "dCategories": "Categories:",
+  "dAmountOfChapters": "Amount of chapters:",
+  "dLastChapterReleased": "Last chapter released:"
 }
