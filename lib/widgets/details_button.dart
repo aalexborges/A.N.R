@@ -13,7 +13,10 @@ class DetailsButton extends StatelessWidget {
   final BookData? data;
 
   void _onPressed(BuildContext context) {
-    context.pushNamed(ScreenPaths.details, extra: Details.fromBook(book: book, data: data!));
+    context.push(
+      ScreenPaths.details,
+      extra: Details.fromBook(book: book, data: data!),
+    );
   }
 
   @override
