@@ -82,11 +82,11 @@ class MuitoMangaRepository extends ScanBaseRepository {
           items: $.querySelectorAll('.manga-chapters > div > a'),
           transform: (value) => ScrapingUtil(value),
           callback: (item) {
-            final url = baseURL + item.getURL();
+            final path = item.getURL();
             final name = item.getByText().replaceAll('#', '').trim();
 
             if (item.hasEmptyOrNull([url, name])) return null;
-            return ChapterBase(name: name, url: url, bookSlug: book.slug);
+            return ChapterBase(name: name, url: baseURL + path, bookSlug: book.slug);
           },
         );
 
