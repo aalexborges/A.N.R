@@ -2,6 +2,7 @@ import 'package:anr/models/book.dart';
 import 'package:anr/models/book_data.dart';
 import 'package:anr/widgets/chapters_title.dart';
 import 'package:anr/widgets/details_button.dart';
+import 'package:anr/widgets/read_button.dart';
 import 'package:anr/widgets/shimmer_item.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,7 @@ class BookMiddleActions extends StatelessWidget {
             child: _shortSinopse(),
           ),
           DetailsButton(book: book, data: data),
-          // const ReadButton(),
+          ReadButton(book: book, data: data),
           ChaptersTitle(onPressChangeOrder: onPressChangeOrder),
         ],
       ),
