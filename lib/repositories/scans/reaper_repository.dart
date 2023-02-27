@@ -43,16 +43,48 @@ class ReaperRepository extends ScanBaseRepository {
     );
   }
 
+  // @override
+  // Future<List<Book>> search(String value) async {
+  //   try {
+  //     final books = <Book>[];
+
+  //     final response = await dio.get('$apiBaseURL/series/search');
+
+  //     return books;
+  //   } catch (_) {
+  //     return List.empty();
+  //   }
+  // }
+
   @override
-  Future<List<Book>> search(String value) async {
-    try {
-      final books = <Book>[];
+  Future<BookData> data(Book book) async {
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
 
-      final response = await dio.get('$apiBaseURL/series/search');
+        final scanScrapingUtil = ScanScrapingUtil($);
+        final categories = scanScrapingUtil.categories(selector: '.tags-container > span');
+        final sinopse = scanScrapingUtil.sinopse(selector: '.description-container');
 
-      return books;
-    } catch (_) {
-      return List.empty();
-    }
+        // Chapters ------------------------------------------------
+
+        final baseURL = _baseByURL(url);
+        final chapters = await _chapters(
+          items: $.querySelectorAll('.chapters-list-wrapper div span a'),
+          transform: (value) => ScrapingUtil(value),
+          callback: (item) {
+            final path = item.getURL();
+            final name = item.getByText(selector: 'li > div > span');
+
+            if (item.hasEmptyOrNull([path, name])) return null;
+            return ChapterBase(name: name, url: baseURL + path, bookSlug: book.slug);
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: book.type);
+      },
+    );
   }
 }
