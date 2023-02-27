@@ -10,7 +10,7 @@ class MangaLivreRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -35,7 +35,7 @@ class MangaLivreRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -57,6 +57,63 @@ class MangaLivreRepository extends ScanBaseRepository {
         }
 
         return books;
+      },
+    );
+  }
+
+  @override
+  Future<BookData> data(Book book) async {
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
+
+        // Categories ----------------------------------------------
+
+        final categories = <String>[];
+
+        $.querySelectorAll('.series-info li a span.button').forEach((element) {
+          final category = element.text.trim();
+          if (category.isNotEmpty) categories.add(category);
+        });
+
+        // Sinopse -------------------------------------------------
+
+        final sinopse = $.querySelector('#series-data .series-desc')?.text.trim() ?? '';
+
+        // Chapters ------------------------------------------------
+
+        final baseURL = _baseByURL(url);
+        final pageChapters = [];
+        final totalChaptersPage = $.querySelector('.container-box h2 span')?.text.trim() ?? '1';
+
+        await Future.wait(List.generate((int.parse(totalChaptersPage) / 30).ceil(), (index) async {
+          final page = index + 1;
+          final baseChapterUrl = '$baseURL/series/chapters_list.json';
+          final chapterUrl = '$baseChapterUrl?page=$page&id_serie=${book.webID}';
+
+          final requestOptions = Options(headers: {"x-requested-with": "XMLHttpRequest"});
+          final response = await dio.get(chapterUrl, options: requestOptions);
+
+          pageChapters.addAll(response.data['chapters']);
+        }));
+
+        final chapters = await _chapters<dynamic, dynamic>(
+          items: pageChapters,
+          callback: (item) {
+            final release = Map.from(item['releases']).values.first;
+
+            return ChapterBase(
+              url: '$baseURL${release['link']}',
+              name: 'Cap. ${item['number']}',
+              webId: release['id_release'].toString(),
+              bookSlug: book.slug,
+            );
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: book.type);
       },
     );
   }

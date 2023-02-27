@@ -10,7 +10,7 @@ class NeoxRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -44,14 +44,12 @@ class NeoxRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final subKey = '?s=$value&post_type=wp-manga';
-        final url = '$baseURL/$subKey';
-
+        final url = '$baseURL/?s=$value&post_type=wp-manga';
         final response = await dio.get(url);
         final $ = parse(response.data);
 
@@ -74,9 +72,10 @@ class NeoxRepository extends ScanBaseRepository {
 
   @override
   Future<BookData> data(Book book) async {
-    return _tryAllURLs<BookData>(
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
       callback: (baseURL) async {
-        final response = await dio.get(book.path);
+        final response = await dio.get(baseURL);
         final $ = parse(response.data);
 
         // Categories ----------------------------------------------
@@ -119,7 +118,7 @@ class NeoxRepository extends ScanBaseRepository {
           },
         );
 
-        return BookData(chapters: chapters, sinopse: sinopse, categories: categories);
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
       },
     );
   }

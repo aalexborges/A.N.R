@@ -10,7 +10,7 @@ class MuitoMangaRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -37,14 +37,12 @@ class MuitoMangaRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final subKey = '?q=$value';
-        final url = '$baseURL/buscar$subKey';
-
+        final url = '$baseURL/buscar?q=$value';
         final response = await dio.get(url);
         final $ = parse(response.data);
 
@@ -61,6 +59,47 @@ class MuitoMangaRepository extends ScanBaseRepository {
         }
 
         return books;
+      },
+    );
+  }
+
+  @override
+  Future<BookData> data(Book book) async {
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
+
+        // Categories ----------------------------------------------
+
+        final categories = <String>[];
+
+        $.querySelectorAll('ul.last-generos-series > li > a').forEach((element) {
+          final category = element.text.trim();
+          if (category.isNotEmpty) categories.add(category);
+        });
+
+        // Sinopse -------------------------------------------------
+
+        final sinopse = $.querySelector('.boxAnimeSobreLast > p')?.text.trim() ?? '';
+
+        // Chapters ------------------------------------------------
+
+        final baseURL = _baseByURL(url);
+        final chapters = await _chapters(
+          items: $.querySelectorAll('.manga-chapters > div > a'),
+          transform: (value) => ScrapingUtil(value),
+          callback: (item) {
+            final url = baseURL + item.getURL();
+            final name = item.getByText().replaceAll('#', '').trim();
+
+            if (item.hasEmptyOrNull([url, name])) return null;
+            return ChapterBase(name: name, url: url, bookSlug: book.slug);
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: book.type);
       },
     );
   }

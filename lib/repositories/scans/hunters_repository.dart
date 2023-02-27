@@ -10,7 +10,7 @@ class HuntersRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -44,13 +44,12 @@ class HuntersRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final subKey = '?s=$value&post_type=wp-manga';
-        final url = '$baseURL/$subKey';
+        final url = '$baseURL/?s=$value&post_type=wp-manga';
 
         final response = await dio.get(url);
         final $ = parse(response.data);
@@ -70,5 +69,67 @@ class HuntersRepository extends ScanBaseRepository {
         return books;
       },
     );
+  }
+
+  @override
+  Future<BookData> data(Book book) async {
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
+      callback: (baseURL) async {
+        final response = await dio.get(baseURL);
+        final $ = parse(response.data);
+
+        // Categories ----------------------------------------------
+
+        final categories = <String>[];
+
+        $.querySelectorAll('.genres-content a').forEach((element) {
+          final category = element.text.trim();
+          if (category.isNotEmpty) categories.add(category);
+        });
+
+        // Type ----------------------------------------------------
+
+        String? type;
+
+        $.querySelectorAll('.post-content_item').forEach((element) {
+          final scraping = ScrapingUtil(element);
+          final key = scraping.getByText(selector: 'h5').toLowerCase();
+
+          if (key == 'tipo') type = scraping.getByText(selector: '.summary-content');
+        });
+
+        type ??= book.type;
+
+        // Sinopse -------------------------------------------------
+
+        final sinopse = $.querySelector('.summary__content')?.text.trim() ?? '';
+
+        // Chapters ------------------------------------------------
+
+        final chaptersElements = await _chapterElements(baseURL);
+        final chapters = await _chapters(
+          items: chaptersElements,
+          transform: (value) => ScrapingUtil(value),
+          callback: (item) {
+            final url = item.getURL();
+            final name = item.getByText();
+
+            if (item.hasEmptyOrNull([url, name])) return null;
+            return ChapterBase(name: name, url: url, bookSlug: book.slug);
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
+      },
+    );
+  }
+
+  Future<List<Element>> _chapterElements(String baseURL) async {
+    final url = '$baseURL/ajax/chapters'.replaceAll('//a', '/a');
+    final response = await dio.post(url);
+    final $ = parse(response.data);
+
+    return $.querySelectorAll('ul.main > li.wp-manga-chapter > a');
   }
 }

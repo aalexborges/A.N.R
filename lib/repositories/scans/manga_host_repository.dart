@@ -10,7 +10,7 @@ class MangaHostRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -39,14 +39,12 @@ class MangaHostRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final subKey = 'find/$value';
-        final url = '$baseURL/$subKey';
-
+        final url = '$baseURL/find/$value';
         final response = await dio.get(url);
         final $ = parse(response.data);
 
@@ -63,6 +61,66 @@ class MangaHostRepository extends ScanBaseRepository {
         }
 
         return books;
+      },
+    );
+  }
+
+  @override
+  Future<BookData> data(Book book) async {
+    return _tryWithAllBaseUrls<BookData>(
+      path: book.path,
+      callback: (baseURL) async {
+        final response = await dio.get(baseURL);
+        final $ = parse(response.data);
+
+        // Categories ----------------------------------------------
+
+        final categories = <String>[];
+
+        $.querySelectorAll('div.tags a.tag').forEach((element) {
+          final category = element.text.trim();
+          if (category.isNotEmpty) categories.add(category);
+        });
+
+        // Type ----------------------------------------------------
+
+        String? type;
+
+        $.querySelectorAll('div.text ul li').forEach((element) {
+          final scraping = ScrapingUtil(element);
+          final key = scraping.getByText(selector: 'strong').toLowerCase();
+
+          if (key.contains('tipo')) {
+            type = scraping.getByText(selector: 'div');
+            type = type!.isEmpty ? null : type!.replaceAll('Tipo: ', '').trim();
+          }
+        });
+
+        type ??= book.type;
+
+        // Sinopse -------------------------------------------------
+
+        final sinopse = $.querySelector('div.text .paragraph')?.text.trim() ?? '';
+
+        // Chapters ------------------------------------------------
+
+        final chapters = await _chapters(
+          items: $.querySelectorAll('section div.chapters div.cap'),
+          transform: (value) => ScrapingUtil(value),
+          callback: (item) {
+            final url = item.getURL(selector: '.tags a');
+            String name = item.getByText(selector: 'a[rel]');
+
+            if (item.hasEmptyOrNull([url, name])) return null;
+
+            final char = double.tryParse(name);
+            name = char != null ? 'Cap. ${name.padLeft(2, '0')}' : name;
+
+            return ChapterBase(name: name, url: url, bookSlug: book.slug);
+          },
+        );
+
+        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
       },
     );
   }

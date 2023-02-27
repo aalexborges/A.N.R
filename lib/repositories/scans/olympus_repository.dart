@@ -10,7 +10,7 @@ class OlympusRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> lastAdded() {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
@@ -37,14 +37,12 @@ class OlympusRepository extends ScanBaseRepository {
 
   @override
   Future<List<Book>> search(String value) {
-    return _tryAllURLs<List<Book>>(
+    return _tryWithAllBaseUrls<List<Book>>(
       defaultValue: List.empty(),
       callback: (baseURL) async {
         final books = <Book>[];
 
-        final subKey = '?s=$value&post_type=wp-manga';
-        final url = '$baseURL/$subKey';
-
+        final url = '$baseURL/?s=$value&post_type=wp-manga';
         final response = await dio.get(url);
         final $ = parse(response.data);
 

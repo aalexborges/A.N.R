@@ -42,12 +42,16 @@ abstract class ScanBaseRepository {
     return client;
   }
 
-  Future<T> _tryAllURLs<T>({required Future<T> Function(String baseURL) callback, T? defaultValue}) async {
+  Future<T> _tryWithAllBaseUrls<T>({
+    String? path,
+    required Future<T> Function(String baseURL) callback,
+    T? defaultValue,
+  }) async {
     dynamic error;
 
     for (String baseURL in baseURLs) {
       try {
-        return await callback(baseURL);
+        return await callback(_urlByPath(baseURL: baseURL, path: path));
       } catch (err) {
         error = err;
       }
@@ -77,5 +81,18 @@ abstract class ScanBaseRepository {
 
     chapters.sort((a, b) => b.id.compareTo(a.id));
     return chapters;
+  }
+
+  String _baseByURL(String url) {
+    return baseURLs.firstWhere((element) => url.contains(element));
+  }
+
+  String _urlByPath({required String baseURL, String? path}) {
+    if (path == null) return baseURL;
+
+    final result = baseURLs.where((element) => path.contains(element));
+
+    if (result.isNotEmpty) return path.replaceAll(result.first, baseURL);
+    return '$baseURL$path';
   }
 }
