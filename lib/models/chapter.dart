@@ -8,7 +8,15 @@ class Chapter {
 
   final String? webId;
 
-  String get chapter {
+  String get chapter => formatIdToChapterString(id);
+
+  String get firebaseId => id.toString().replaceAll('.', '_');
+
+  static double firebaseIdToId(String firebaseId) {
+    return double.parse(firebaseId.replaceAll('_', '.'));
+  }
+
+  static String formatIdToChapterString(double id) {
     return id.toStringAsFixed(2).contains('.00') ? id.toStringAsFixed(0) : id.toString();
   }
 }
@@ -42,4 +50,11 @@ class ChapterBase {
     if (afterFloatPoint != null) return double.parse('$beforeFloatPoint.$afterFloatPoint');
     return double.parse(beforeFloatPoint.toString());
   }
+}
+
+class ContinueReading {
+  const ContinueReading({required this.id, required this.progress});
+
+  final double id;
+  final double progress;
 }
