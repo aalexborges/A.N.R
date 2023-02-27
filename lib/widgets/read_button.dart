@@ -20,7 +20,7 @@ class ReadButton extends StatelessWidget {
     return FutureBuilder(
       future: Future(() => ReadingHistoryRepository.I.continueReading(book)),
       builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.hasError) return const SizedBox();
+        if (snapshot.hasError) return const SizedBox();
 
         double continueBy = snapshot.data?.id ?? data!.chapters.last.id;
 
