@@ -61,8 +61,7 @@ class ReaperRepository extends ScanBaseRepository {
       }
 
       return books;
-    } catch (e) {
-      print(e);
+    } catch (_) {
       return List.empty();
     }
   }
