@@ -93,7 +93,13 @@ class _BookScreenState extends State<BookScreen> {
                   (context, index) {
                     return ChapterListItem(
                       chapter: _store.chapters[index],
-                      onTap: () {},
+                      onTap: () => ChapterListItem.toDetails(
+                        book: widget.book,
+                        context: context,
+                        chapters: _store.data!.chapters,
+                        startAt: index,
+                        order: _store.order,
+                      ),
                     );
                   },
                   childCount: _store.chapters.length,
