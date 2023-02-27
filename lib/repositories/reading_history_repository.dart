@@ -23,10 +23,13 @@ class ReadingHistoryRepository {
     if (ref == null) return null;
 
     final data = await ref.child(book.slug).orderByKey().limitToLast(1).get();
-    final item = data.children.first;
-    final id = item.key;
+    if (!data.exists) return null;
 
-    if (id == null) return null;
+    final item = data.children.first;
+    if (!item.exists) return null;
+
+    final id = item.key;
+    if (id == null || id.isEmpty) return null;
 
     return ContinueReading(
       id: Chapter.firebaseIdToId(id),
