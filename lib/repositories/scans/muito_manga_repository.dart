@@ -71,18 +71,9 @@ class MuitoMangaRepository extends ScanBaseRepository {
         final response = await dio.get(url);
         final $ = parse(response.data);
 
-        // Categories ----------------------------------------------
-
-        final categories = <String>[];
-
-        $.querySelectorAll('ul.last-generos-series > li > a').forEach((element) {
-          final category = element.text.trim();
-          if (category.isNotEmpty) categories.add(category);
-        });
-
-        // Sinopse -------------------------------------------------
-
-        final sinopse = $.querySelector('.boxAnimeSobreLast > p')?.text.trim() ?? '';
+        final scanScrapingUtil = ScanScrapingUtil($);
+        final categories = scanScrapingUtil.categories(selector: 'ul.last-generos-series > li > a');
+        final sinopse = scanScrapingUtil.sinopse(selector: '.boxAnimeSobreLast > p');
 
         // Chapters ------------------------------------------------
 

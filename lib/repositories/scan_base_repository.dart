@@ -95,4 +95,12 @@ abstract class ScanBaseRepository {
     if (result.isNotEmpty) return path.replaceAll(result.first, baseURL);
     return '$baseURL$path';
   }
+
+  Future<List<Element>> _chapterElements(String baseURL, {String? selector}) async {
+    final url = '$baseURL/ajax/chapters'.replaceAll('//a', '/a');
+    final response = await dio.post(url);
+    final $ = parse(response.data);
+
+    return $.querySelectorAll(selector ?? 'ul.main > li.wp-manga-chapter > a');
+  }
 }

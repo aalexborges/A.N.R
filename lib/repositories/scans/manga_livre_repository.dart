@@ -69,18 +69,9 @@ class MangaLivreRepository extends ScanBaseRepository {
         final response = await dio.get(url);
         final $ = parse(response.data);
 
-        // Categories ----------------------------------------------
-
-        final categories = <String>[];
-
-        $.querySelectorAll('.series-info li a span.button').forEach((element) {
-          final category = element.text.trim();
-          if (category.isNotEmpty) categories.add(category);
-        });
-
-        // Sinopse -------------------------------------------------
-
-        final sinopse = $.querySelector('#series-data .series-desc')?.text.trim() ?? '';
+        final scanScrapingUtil = ScanScrapingUtil($);
+        final categories = scanScrapingUtil.categories(selector: '.series-info li a span.button');
+        final sinopse = scanScrapingUtil.sinopse(selector: '#series-data .series-desc');
 
         // Chapters ------------------------------------------------
 

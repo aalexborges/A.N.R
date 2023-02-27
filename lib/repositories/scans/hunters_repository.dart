@@ -79,31 +79,10 @@ class HuntersRepository extends ScanBaseRepository {
         final response = await dio.get(baseURL);
         final $ = parse(response.data);
 
-        // Categories ----------------------------------------------
-
-        final categories = <String>[];
-
-        $.querySelectorAll('.genres-content a').forEach((element) {
-          final category = element.text.trim();
-          if (category.isNotEmpty) categories.add(category);
-        });
-
-        // Type ----------------------------------------------------
-
-        String? type;
-
-        $.querySelectorAll('.post-content_item').forEach((element) {
-          final scraping = ScrapingUtil(element);
-          final key = scraping.getByText(selector: 'h5').toLowerCase();
-
-          if (key == 'tipo') type = scraping.getByText(selector: '.summary-content');
-        });
-
-        type ??= book.type;
-
-        // Sinopse -------------------------------------------------
-
-        final sinopse = $.querySelector('.summary__content')?.text.trim() ?? '';
+        final scanScrapingUtil = ScanScrapingUtil($);
+        final categories = scanScrapingUtil.categories();
+        final type = scanScrapingUtil.type(alternativeType: book.type);
+        final sinopse = scanScrapingUtil.sinopse(selector: '.summary__content');
 
         // Chapters ------------------------------------------------
 
@@ -123,13 +102,5 @@ class HuntersRepository extends ScanBaseRepository {
         return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
       },
     );
-  }
-
-  Future<List<Element>> _chapterElements(String baseURL) async {
-    final url = '$baseURL/ajax/chapters'.replaceAll('//a', '/a');
-    final response = await dio.post(url);
-    final $ = parse(response.data);
-
-    return $.querySelectorAll('ul.main > li.wp-manga-chapter > a');
   }
 }

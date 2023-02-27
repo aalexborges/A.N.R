@@ -73,34 +73,16 @@ class MangaHostRepository extends ScanBaseRepository {
         final response = await dio.get(baseURL);
         final $ = parse(response.data);
 
-        // Categories ----------------------------------------------
-
-        final categories = <String>[];
-
-        $.querySelectorAll('div.tags a.tag').forEach((element) {
-          final category = element.text.trim();
-          if (category.isNotEmpty) categories.add(category);
-        });
-
-        // Type ----------------------------------------------------
-
-        String? type;
-
-        $.querySelectorAll('div.text ul li').forEach((element) {
-          final scraping = ScrapingUtil(element);
-          final key = scraping.getByText(selector: 'strong').toLowerCase();
-
-          if (key.contains('tipo')) {
-            type = scraping.getByText(selector: 'div');
-            type = type!.isEmpty ? null : type!.replaceAll('Tipo: ', '').trim();
-          }
-        });
-
-        type ??= book.type;
-
-        // Sinopse -------------------------------------------------
-
-        final sinopse = $.querySelector('div.text .paragraph')?.text.trim() ?? '';
+        final scanScrapingUtil = ScanScrapingUtil($);
+        final categories = scanScrapingUtil.categories(selector: 'div.tags a.tag');
+        final sinopse = scanScrapingUtil.sinopse(selector: 'div.text .paragraph');
+        final type = scanScrapingUtil.type(
+          keySelector: 'strong',
+          itemsSelector: 'div.text ul li',
+          valueSelector: 'div',
+          alternativeType: book.type,
+          transform: (type) => type?.replaceAll('Tipo: ', '').trim(),
+        );
 
         // Chapters ------------------------------------------------
 
