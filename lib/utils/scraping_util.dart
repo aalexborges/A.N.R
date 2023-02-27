@@ -44,7 +44,7 @@ class ScrapingUtil {
     return attribute.trim();
   }
 
-  bool hasEmptyOrNull(List<String?> values) {
+  static bool hasEmptyOrNull(List<String?> values) {
     for (String? value in values) {
       if (value == null || value.isEmpty) return true;
     }

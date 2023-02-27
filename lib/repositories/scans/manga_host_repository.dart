@@ -27,7 +27,7 @@ class MangaHostRepository extends ScanBaseRepository {
 
           final is18 = element.querySelector('.age-18') != null;
 
-          if (scraping.hasEmptyOrNull([src, path, name]) || is18) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name]) || is18) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -55,7 +55,7 @@ class MangaHostRepository extends ScanBaseRepository {
           final path = scraping.getURL(selector: 'h4 a');
           final name = scraping.getByText(selector: 'h4 a');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -93,7 +93,7 @@ class MangaHostRepository extends ScanBaseRepository {
             final url = item.getURL(selector: '.tags a');
             String name = item.getByText(selector: 'a[rel]');
 
-            if (item.hasEmptyOrNull([url, name])) return null;
+            if (ScrapingUtil.hasEmptyOrNull([url, name])) return null;
 
             final char = double.tryParse(name);
             name = char != null ? 'Cap. ${name.padLeft(2, '0')}' : name;

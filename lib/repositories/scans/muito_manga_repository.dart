@@ -25,7 +25,7 @@ class MuitoMangaRepository extends ScanBaseRepository {
           final path = scraping.getURL(selector: 'a');
           final name = scraping.getByAttribute(attribute: 'title', selector: 'img');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -53,7 +53,7 @@ class MuitoMangaRepository extends ScanBaseRepository {
           final path = scraping.getURL(selector: 'a');
           final name = scraping.getByAttribute(attribute: 'title', selector: 'img');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -85,7 +85,7 @@ class MuitoMangaRepository extends ScanBaseRepository {
             final path = item.getURL();
             final name = item.getByText().replaceAll('#', '').trim();
 
-            if (item.hasEmptyOrNull([url, name])) return null;
+            if (ScrapingUtil.hasEmptyOrNull([url, name])) return null;
             return ChapterBase(name: name, url: baseURL + path, bookSlug: book.slug);
           },
         );

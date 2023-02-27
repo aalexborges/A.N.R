@@ -26,7 +26,7 @@ class NeoxRepository extends ScanBaseRepository {
           final name = scraping.getByText(selector: 'h3 a');
           final type = scraping.getByText(selector: 'span');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(
             src: src!,
@@ -60,7 +60,7 @@ class NeoxRepository extends ScanBaseRepository {
           final path = scraping.getURL(selector: 'h3 a');
           final name = scraping.getByText(selector: 'h3 a');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -92,7 +92,7 @@ class NeoxRepository extends ScanBaseRepository {
             final url = item.getURL();
             final name = item.getByText();
 
-            if (item.hasEmptyOrNull([url, name])) return null;
+            if (ScrapingUtil.hasEmptyOrNull([url, name])) return null;
             return ChapterBase(name: name, url: url, bookSlug: book.slug);
           },
         );

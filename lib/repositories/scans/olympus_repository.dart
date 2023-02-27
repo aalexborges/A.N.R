@@ -25,7 +25,7 @@ class OlympusRepository extends ScanBaseRepository {
           final path = scraping.getURL(selector: 'div > a');
           final name = scraping.getByAttribute(attribute: 'title', selector: 'div > a');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }
@@ -53,7 +53,7 @@ class OlympusRepository extends ScanBaseRepository {
           final path = scraping.getURL();
           final name = scraping.getByAttribute(attribute: 'title');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(src: src!, name: name, path: path, scan: scan));
         }

@@ -27,7 +27,7 @@ class ReaperRepository extends ScanBaseRepository {
           final name = scraping.getByText(selector: 'h5');
           final type = scraping.getByText(selector: 'span');
 
-          if (scraping.hasEmptyOrNull([src, path, name])) continue;
+          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
 
           books.add(Book(
             src: src!,
@@ -43,18 +43,29 @@ class ReaperRepository extends ScanBaseRepository {
     );
   }
 
-  // @override
-  // Future<List<Book>> search(String value) async {
-  //   try {
-  //     final books = <Book>[];
+  @override
+  Future<List<Book>> search(String value) async {
+    try {
+      final books = <Book>[];
 
-  //     final response = await dio.get('$apiBaseURL/series/search');
+      final response = await dio.post('$apiBaseURL/series/search', data: {'term': value});
 
-  //     return books;
-  //   } catch (_) {
-  //     return List.empty();
-  //   }
-  // }
+      for (final item in response.data) {
+        final src = item['thumbnail'];
+        final name = item['title'];
+        final path = item['series_slug'];
+
+        if (ScrapingUtil.hasEmptyOrNull([src, name, path])) continue;
+
+        books.add(Book(src: '$apiBaseURL/$src', name: name, path: '/series/$path', scan: scan));
+      }
+
+      return books;
+    } catch (e) {
+      print(e);
+      return List.empty();
+    }
+  }
 
   @override
   Future<BookData> data(Book book) async {
@@ -78,7 +89,7 @@ class ReaperRepository extends ScanBaseRepository {
             final path = item.getURL();
             final name = item.getByText(selector: 'li > div > span');
 
-            if (item.hasEmptyOrNull([path, name])) return null;
+            if (ScrapingUtil.hasEmptyOrNull([path, name])) return null;
             return ChapterBase(name: name, url: baseURL + path, bookSlug: book.slug);
           },
         );
