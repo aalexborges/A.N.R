@@ -57,3 +57,46 @@ class ScrapingUtil {
     return srcs.where((value) => value.length > 3).last.trim();
   }
 }
+
+class ScanScrapingUtil {
+  const ScanScrapingUtil(this.$);
+
+  final Document $;
+
+  List<String> categories({String? selector}) {
+    final categories = <String>[];
+
+    $.querySelectorAll(selector ?? '.genres-content a').forEach((element) {
+      final category = element.text.trim();
+      if (category.isNotEmpty) categories.add(category);
+    });
+
+    return categories;
+  }
+
+  String? type({
+    String? itemsSelector,
+    String? keySelector,
+    String? valueSelector,
+    String? alternativeType,
+    String? Function(String? type)? transform,
+  }) {
+    String? type;
+
+    $.querySelectorAll(itemsSelector ?? '.post-content_item').forEach((element) {
+      final scraping = ScrapingUtil(element);
+      final key = scraping.getByText(selector: keySelector ?? 'h5').toLowerCase();
+
+      if (key.contains('tipo') || key.contains('type')) {
+        type = scraping.getByText(selector: valueSelector ?? '.summary-content');
+        if (transform != null) type = transform(type);
+      }
+    });
+
+    return (type ?? '').isEmpty ? alternativeType : type;
+  }
+
+  String sinopse({String? selector}) {
+    return $.querySelector(selector ?? '.manga-excerpt')?.text.trim() ?? '';
+  }
+}
