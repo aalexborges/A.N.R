@@ -3,6 +3,7 @@ import 'package:anr/stores/book_store.dart';
 import 'package:anr/widgets/book_image_background.dart';
 import 'package:anr/widgets/book_middle_actions.dart';
 import 'package:anr/widgets/book_subtitle_infos.dart';
+import 'package:anr/widgets/chapter_list_item.dart';
 import 'package:anr/widgets/favorite_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -19,12 +20,12 @@ class BookScreen extends StatefulWidget {
 
 class _BookScreenState extends State<BookScreen> {
   late BookStore _store;
-  late double? _pinnedHeight;
+  double? _pinnedHeight;
 
   final _scrollController = ScrollController();
 
   void _scrollListener() {
-    _pinnedHeight ??= (70 * MediaQuery.of(context).size.height) / 100;
+    _pinnedHeight ??= (65 * MediaQuery.of(context).size.height) / 100;
 
     if (!_store.pinnedTitle && _scrollController.offset >= _pinnedHeight!) return _store.setPinnedTitle(true);
     if (_store.pinnedTitle && _scrollController.offset < _pinnedHeight!) return _store.setPinnedTitle(false);
@@ -86,6 +87,19 @@ class _BookScreenState extends State<BookScreen> {
                 ),
               ),
             ),
+            Observer(builder: (context) {
+              return SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return ChapterListItem(
+                      chapter: _store.chapters[index],
+                      onTap: () {},
+                    );
+                  },
+                  childCount: _store.chapters.length,
+                ),
+              );
+            })
           ],
         ),
       ),
