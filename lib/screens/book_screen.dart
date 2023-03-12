@@ -91,8 +91,12 @@ class _BookScreenState extends State<BookScreen> {
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
+                    final chapter = _store.chapters[index];
+                    final id = chapter.id.toString();
+
                     return ChapterListItem(
-                      chapter: _store.chapters[index],
+                      key: Key(id),
+                      chapter: chapter,
                       onTap: () => ChapterListItem.toDetails(
                         book: widget.book,
                         context: context,
