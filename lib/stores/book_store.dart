@@ -1,5 +1,6 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/book_data.dart';
+import 'package:anr/models/chapter.dart';
 import 'package:anr/models/order.dart';
 import 'package:anr/models/scan.dart';
 import 'package:mobx/mobx.dart';
@@ -20,11 +21,11 @@ abstract class _BookStore with Store {
   Order order = Order.desc;
 
   @computed
-  List get chapters {
+  List<Chapter> get chapters {
     if (data == null) return List.empty();
     if (order == Order.desc) return data!.chapters;
 
-    return List.from(data!.chapters, growable: false).reversed.toList();
+    return List<Chapter>.from(data!.chapters, growable: false).reversed.toList();
   }
 
   @action

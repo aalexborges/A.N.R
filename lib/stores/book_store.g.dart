@@ -9,11 +9,11 @@ part of 'book_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$BookStore on _BookStore, Store {
-  Computed<List<dynamic>>? _$chaptersComputed;
+  Computed<List<Chapter>>? _$chaptersComputed;
 
   @override
-  List<dynamic> get chapters =>
-      (_$chaptersComputed ??= Computed<List<dynamic>>(() => super.chapters,
+  List<Chapter> get chapters =>
+      (_$chaptersComputed ??= Computed<List<Chapter>>(() => super.chapters,
               name: '_BookStore.chapters'))
           .value;
 
