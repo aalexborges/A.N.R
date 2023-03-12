@@ -36,7 +36,7 @@ class _ContentScreenState extends State<ContentScreen> {
   final _contents = List<Content>.empty(growable: true);
   final _controller = ScrollController();
 
-  bool get _isProcessing => _isLoading || _processing || _lastChapter;
+  bool get _isProcessing => _isLoading || _processing;
   bool get _hasContent => _currentChapter != null && _currentContent != null && _currentChapterIndex != null;
   bool get _hasNextContent => _nextChapter != null && _nextContent != null && _nextChapterIndex != null;
 
@@ -112,8 +112,12 @@ class _ContentScreenState extends State<ContentScreen> {
   Future<void> _scrollListener() async {
     if (_isProcessing) return;
     _processing = true;
-
     _readingProgress = _currentContent?.readingProgress ?? _readingProgress;
+
+    if (_lastChapter) {
+      _processing = false;
+      return;
+    }
 
     if (_readingProgress >= 100) {
       await _next();
