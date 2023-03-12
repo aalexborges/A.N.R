@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anr/models/scan.dart';
 import 'package:anr/stores/favorites_store.dart';
 import 'package:anr/widgets/book_list_item.dart';
@@ -17,7 +19,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   @override
   void initState() {
-    _store = FavoritesStore()..get();
+    _store = FavoritesStore()..get().catchError(_snackBarError);
     super.initState();
   }
 
@@ -82,5 +84,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         ),
       ),
     );
+  }
+
+  FutureOr<void> _snackBarError(dynamic e) {
+    final t = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
+    messenger.clearSnackBars();
+    messenger.showSnackBar(SnackBar(content: Text(t.getFavoritesError)));
   }
 }
