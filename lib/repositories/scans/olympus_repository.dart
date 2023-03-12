@@ -3,7 +3,7 @@ part of '../scan_base_repository.dart';
 class OlympusRepository extends ScanBaseRepository {
   OlympusRepository();
 
-  Scan get scan => Scan.olympus;
+  Scan get scan => Scan.neox;
 
   @override
   List<String> get baseURLs => ['https://br.olympusscanlation.com'];
