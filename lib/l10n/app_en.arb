@@ -1,5 +1,7 @@
 {
   "all": "All",
+  "signOut": "Sign out",
+  "anonymous": "Anonymous",
   "lastAdded": "{scan} - Last added",
   "signInGoogle": "Sign in with Google",
   "searchBook": "{scan} - Search book...",

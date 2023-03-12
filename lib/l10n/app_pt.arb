@@ -1,5 +1,7 @@
 {
   "all": "Todos",
+  "signOut": "Sair",
+  "anonymous": "Anônimo",
   "lastAdded": "{scan} - Últimos adicionados",
   "signInGoogle": "Entrar com o Google",
   "searchBook": "{scan} - Buscar livro...",
