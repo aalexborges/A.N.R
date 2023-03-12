@@ -1,16 +1,26 @@
-class Chapter {
-  const Chapter({required this.id, required this.url, required this.name, required this.bookSlug, this.webId});
+import 'package:flutter/material.dart';
+
+class Chapter extends ChangeNotifier {
+  Chapter({required this.id, required this.url, required this.name, required this.bookSlug, this.webId});
 
   final double id;
   final String url;
   final String name;
   final String bookSlug;
-
   final String? webId;
+
+  double _readingProgress = 0;
 
   String get chapter => formatIdToChapterString(id);
 
   String get firebaseId => id.toString().replaceAll('.', '_');
+
+  double get readingProgress => _readingProgress;
+
+  void setReadingProgress(double value) {
+    _readingProgress = value;
+    notifyListeners();
+  }
 
   static double firebaseIdToId(String firebaseId) {
     return double.parse(firebaseId.replaceAll('_', '.'));
