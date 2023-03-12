@@ -33,7 +33,7 @@ final appRouter = GoRouter(
     GoRoute(path: ScreenPaths.home, builder: (ctx, state) => const HomeScreen()),
     GoRoute(path: ScreenPaths.book, builder: (ctx, state) => BookScreen(book: state.extra! as Book)),
     GoRoute(path: ScreenPaths.search, builder: (ctx, state) => const SearchScreen()),
-    GoRoute(path: ScreenPaths.content, builder: (ctx, state) => ContentScreen(content: state.extra! as Content)),
+    GoRoute(path: ScreenPaths.content, builder: (ctx, state) => ContentScreen(params: state.extra! as ContentParams)),
     GoRoute(path: ScreenPaths.details, builder: (ctx, state) => DetailsScreen(details: state.extra! as Details)),
     GoRoute(path: ScreenPaths.favorites, builder: (ctx, state) => const FavoritesScreen()),
   ],

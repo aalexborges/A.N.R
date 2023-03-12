@@ -17,8 +17,8 @@ class ReadButton extends StatelessWidget {
   void _onPressed(BuildContext context, double continueBy) {
     context.push(
       ScreenPaths.content,
-      extra: Content(
-        book: book,
+      extra: ContentParams(
+        scan: book.scan,
         chapters: data!.chapters,
         startAt: data!.chapters.indexWhere((element) => element.id == continueBy),
       ),
