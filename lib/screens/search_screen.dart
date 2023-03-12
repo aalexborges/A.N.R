@@ -17,8 +17,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    super.initState();
     _store = SearchStore();
+    super.initState();
   }
 
   @override
