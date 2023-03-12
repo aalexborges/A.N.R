@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:anr/models/book.dart';
+import 'package:anr/models/scan.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -40,5 +43,27 @@ class FavoritesRepository {
 
     if (remove == true) return await ref.child(book.slug).remove();
     await ref.child(book.slug).set(book.toMap());
+  }
+
+  Future<List<Book>> getAll({Scan? scan}) async {
+    final ref = await baseRef;
+
+    late DataSnapshot result;
+
+    if (scan != null) {
+      result = await ref.orderByChild('scan').equalTo(scan.value.toLowerCase()).get();
+    } else {
+      result = await ref.get();
+    }
+
+    final favorites = <Book>[];
+
+    if (result.exists) {
+      for (final data in result.children) {
+        favorites.add(Book.fromJson(jsonEncode(data.value)));
+      }
+    }
+
+    return favorites;
   }
 }
