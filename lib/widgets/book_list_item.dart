@@ -36,6 +36,9 @@ class BookListElement extends StatelessWidget {
                   maxWidthDiskCache: BookListElementSize.cacheMaxWidth,
                   maxHeightDiskCache: BookListElementSize.cacheMaxHeight,
                   placeholder: (context, url) => const BookListElementShimmer(),
+                  errorWidget: (context, url, error) {
+                    return const Center(child: Icon(Icons.broken_image_rounded));
+                  },
                 ),
               ),
               Positioned.fill(
