@@ -1,6 +1,5 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/book_data.dart';
-import 'package:anr/models/scan.dart';
 import 'package:anr/widgets/shimmer_item.dart';
 import 'package:flutter/material.dart';
 
@@ -28,21 +27,18 @@ class BookSubtitleInfos extends StatelessWidget {
       );
     }
 
-    final items = data!.subtitleInfos(book.type);
+    final items = data!.subtitleInfos(scan: book.scan, alternativeType: book.type);
 
     return Container(
       height: height,
       margin: margin,
       alignment: Alignment.centerLeft,
       child: ListView.separated(
-        itemCount: items.length + 1,
+        itemCount: items.length,
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
         separatorBuilder: (context, index) => const BookSubtitleInfosDot(),
-        itemBuilder: (context, index) {
-          if (index == items.length) return _text(context, book.scan.value.toUpperCase());
-          return _text(context, items[index]);
-        },
+        itemBuilder: (context, index) => _text(context, items[index]),
       ),
     );
   }

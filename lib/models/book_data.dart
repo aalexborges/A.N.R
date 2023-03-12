@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anr/models/chapter.dart';
+import 'package:anr/models/scan.dart';
 
 class BookData {
   const BookData({required this.chapters, required this.sinopse, required this.categories, this.type});
@@ -11,11 +12,14 @@ class BookData {
 
   final String? type;
 
-  List<String> subtitleInfos(String? alternativeType) {
-    return List.generate(type == null && alternativeType == null ? 1 : 2, (index) {
-      if (index == 0) return chapters.length.toString();
-      return (type ?? alternativeType)!.trim().toUpperCase();
-    });
+  List<String> subtitleInfos({required Scan scan, String? alternativeType}) {
+    final items = <String>[];
+
+    if (chapters.isNotEmpty) items.add('${chapters.length}/${chapters.first.chapter}');
+    if (type != null || alternativeType != null) items.add((type ?? alternativeType)!.trim().toUpperCase());
+    items.add(scan.value.toUpperCase());
+
+    return items;
   }
 
   Map<String, dynamic> toMap() {
