@@ -94,4 +94,27 @@ class MuitoMangaRepository extends ScanBaseRepository {
       },
     );
   }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    return await _tryWithAllBaseUrls<Content>(
+      path: chapter.url,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
+
+        final key = widget.GlobalObjectKey(chapter.id);
+        final exp = RegExp(r'"(https:.*?)"');
+        final matches = exp.allMatches(response.data);
+        final sources = <String>[];
+
+        for (final RegExpMatch m in matches) {
+          final String item = m[0].toString().replaceAll('\\/', '/');
+          if (item.contains('imgs/')) sources.add(item.replaceAll('"', ''));
+        }
+
+        return Content(key: key, chapter: chapter, items: sources);
+      },
+    );
+  }
 }

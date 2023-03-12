@@ -86,7 +86,7 @@ class NeoxRepository extends ScanBaseRepository {
         // Chapters ------------------------------------------------
 
         final chapters = await _chapters(
-          items: $.querySelectorAll('.main li > a'),
+          items: $.querySelectorAll('.main li.wp-manga-chapter > a'),
           transform: (value) => ScrapingUtil(value),
           callback: (item) {
             final url = item.getURL();
@@ -98,6 +98,40 @@ class NeoxRepository extends ScanBaseRepository {
         );
 
         return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
+      },
+    );
+  }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    return await _tryWithAllBaseUrls<Content>(
+      path: chapter.url,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
+
+        final key = widget.GlobalObjectKey(chapter.id);
+        final novelContent = $.querySelector('.reading-content .text-left');
+
+        if (novelContent != null) {
+          return Content(
+            key: key,
+            items: [novelContent.innerHtml.trim()],
+            chapter: chapter,
+            onlyText: true,
+          );
+        }
+
+        final sources = <String>[];
+
+        for (final img in $.querySelectorAll('.reading-content img')) {
+          final src = ScrapingUtil(img).getSrc();
+          if (ScrapingUtil.hasEmptyOrNull([src])) continue;
+
+          sources.add(src!);
+        }
+
+        return Content(key: key, chapter: chapter, items: sources);
       },
     );
   }

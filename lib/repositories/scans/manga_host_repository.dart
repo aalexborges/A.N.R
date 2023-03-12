@@ -108,6 +108,29 @@ class MangaHostRepository extends ScanBaseRepository {
   }
 
   @override
+  Future<Content> content(Chapter chapter) async {
+    return await _tryWithAllBaseUrls<Content>(
+      path: chapter.url,
+      callback: (url) async {
+        final response = await dio.get(url);
+        final $ = parse(response.data);
+
+        final key = widget.GlobalObjectKey(chapter.id);
+        final sources = <String>[];
+
+        for (final img in $.querySelectorAll('#slider a img')) {
+          final src = ScrapingUtil(img).getSrc();
+          if (ScrapingUtil.hasEmptyOrNull([src])) continue;
+
+          sources.add(src!);
+        }
+
+        return Content(key: key, chapter: chapter, items: sources);
+      },
+    );
+  }
+
+  @override
   Map<String, String>? get headers {
     return {
       'Origin': baseURLs[0],

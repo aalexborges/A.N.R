@@ -108,4 +108,36 @@ class MangaLivreRepository extends ScanBaseRepository {
       },
     );
   }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    return await _tryWithAllBaseUrls<Content>(
+      path: chapter.url,
+      callback: (url) async {
+        final response = await dio.get(url);
+
+        final exp = RegExp(r'''window\.READER_TOKEN = ('.*?'|".*?")''');
+        final matches = exp.allMatches(response.data);
+        final expQuote = RegExp(r'''['"]''');
+        final matchKey = (matches.first.group(1) ?? '').replaceAll(expQuote, '').trim();
+
+        final sources = await _tryWithAllBaseUrls<List<String>>(
+          path: '/leitor/pages/${chapter.webId}.json?key=$matchKey',
+          callback: (contentUrl) async {
+            final response = await dio.get(contentUrl);
+            final sources = <String>[];
+
+            for (final img in response.data['images']) {
+              sources.add(img['legacy'] ?? img['avif']);
+            }
+
+            return sources;
+          },
+        );
+
+        final key = widget.GlobalObjectKey(chapter.id);
+        return Content(key: key, chapter: chapter, items: sources);
+      },
+    );
+  }
 }

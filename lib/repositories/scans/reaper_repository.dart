@@ -97,4 +97,36 @@ class ReaperRepository extends ScanBaseRepository {
       },
     );
   }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    return await _tryWithAllBaseUrls<Content>(
+      path: chapter.url,
+      callback: (url) async {
+        Response response = await dio.get(url);
+        final $ = parse(response.data);
+
+        final item = jsonDecode($.querySelector('#__NEXT_DATA__')?.innerHtml ?? '');
+        final id = item['props']['pageProps']['data']['id'];
+        final contentUrl = '$apiBaseURL/series/chapter/$id';
+
+        response = await dio.get(contentUrl);
+
+        final key = widget.GlobalObjectKey(chapter.id);
+        final content = response.data['content'];
+
+        if (content is String) {
+          return Content(
+            key: key,
+            items: [content],
+            chapter: chapter,
+            onlyText: true,
+          );
+        }
+
+        final sources = (content['images'] ?? []) as List<String>;
+        return Content(key: key, chapter: chapter, items: sources);
+      },
+    );
+  }
 }
