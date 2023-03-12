@@ -54,6 +54,7 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   cookie_jar: ^3.0.1
   html: ^0.15.1
+  flutter_html: ^3.0.0-alpha.6
 
 dev_dependencies:
   flutter_test:
