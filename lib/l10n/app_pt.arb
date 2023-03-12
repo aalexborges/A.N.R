@@ -1,4 +1,5 @@
 {
+  "all": "Todos",
   "lastAdded": "{scan} - Últimos adicionados",
   "signInGoogle": "Entrar com o Google",
   "searchBook": "{scan} - Buscar livro...",
@@ -6,7 +7,7 @@
   "favorites": "Favoritos",
   "bookDetails": "Detalhes do Livro",
   "enterBookName": "Digite o nome do livro",
-  "searchNotResult": "Ops! Não houve resultados para sua busca.",
+  "searchNotResult": "Ops! Não houve resultados para sua busca",
   "bookdDataError": "Ops! Algo deu errado ao obter os dados do livro",
   "toggleFavoriteError": "Ops! Algo deu errado ao adicionar/remover o livro dos seus favoritos",
   "continueReading": "Continuar leitura do capítulo {chapter}",
@@ -17,5 +18,8 @@
   "dCategories": "Categorias:",
   "dAmountOfChapters": "Quantidade de capítulos:",
   "dLastChapterReleased": "Ultimo capítulo lançado:",
-  "bookContentError": "Algo deu errado ao obter o conteúdo do livro"
+  "bookContentError": "Algo deu errado ao obter o conteúdo do livro",
+  "noFavorites": "Ops! Você ainda não tem nenhum livro na sua lista de favoritos",
+  "noFavoritesByScan": "Ops! Você ainda não tem nenhum livro da scan {scan} na sua lista de favoritos",
+  "getFavoritesError": "Ops! Algo deu errado ao obter a sua lista de livros favoritos"
 }

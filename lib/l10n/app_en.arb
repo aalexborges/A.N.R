@@ -1,4 +1,5 @@
 {
+  "all": "All",
   "lastAdded": "{scan} - Last added",
   "signInGoogle": "Sign in with Google",
   "searchBook": "{scan} - Search book...",
@@ -6,7 +7,7 @@
   "favorites": "Favorites",
   "bookDetails": "Book details",
   "enterBookName": "Enter book name",
-  "searchNotResult": "Oops! There were no results for your search.",
+  "searchNotResult": "Oops! There were no results for your search",
   "bookdDataError": "Oops! Something went wrong getting book data",
   "toggleFavoriteError": "Something went wrong adding/removing the book from your favorites",
   "continueReading": "Continue reading from chapter {chapter}",
@@ -17,5 +18,8 @@
   "dCategories": "Categories:",
   "dAmountOfChapters": "Amount of chapters:",
   "dLastChapterReleased": "Last chapter released:",
-  "bookContentError": "Something went wrong while getting book content"
+  "bookContentError": "Something went wrong while getting book content",
+  "noFavorites": "Oops! You don't have any books in your favorites list yet",
+  "noFavoritesByScan": "Oops! You don't have any books by scan {scan} in your favorites list yet",
+  "getFavoritesError": "Oops! Something went wrong getting your favorite book list"
 }
