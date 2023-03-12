@@ -16,5 +16,6 @@
   "dScan": "Scan:",
   "dCategories": "Categorias:",
   "dAmountOfChapters": "Quantidade de capítulos:",
-  "dLastChapterReleased": "Ultimo capítulo lançado:"
+  "dLastChapterReleased": "Ultimo capítulo lançado:",
+  "bookContentError": "Algo deu errado ao obter o conteúdo do livro"
 }
