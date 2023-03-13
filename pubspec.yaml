@@ -55,6 +55,7 @@ dependencies:
   cookie_jar: ^3.0.1
   html: ^0.15.1
   flutter_html: ^3.0.0-alpha.6
+  flutter_native_splash: ^2.2.19
 
 dev_dependencies:
   flutter_test:
@@ -110,3 +111,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_native_splash:
+  color: "#fefbff"
+  image: assets/images/branding.png
+  color_dark: "#1b1b1f"
+  image_dark: assets/images/branding.png
+  android_12:
+    color: "#fefbff"
+    image: assets/images/branding.png
+    color_dark: "#1b1b1f"
+    image_dark: assets/images/branding.png
