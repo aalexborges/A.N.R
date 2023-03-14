@@ -101,7 +101,6 @@ class MuitoMangaRepository extends ScanBaseRepository {
       path: chapter.url,
       callback: (url) async {
         final response = await dio.get(url);
-        final $ = parse(response.data);
 
         final key = widget.GlobalObjectKey(chapter.id);
         final exp = RegExp(r'"(https:.*?)"');
