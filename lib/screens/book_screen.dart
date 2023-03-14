@@ -117,10 +117,12 @@ class _BookScreenState extends State<BookScreen> {
   }
 
   void _snackBarError() {
-    final t = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
+    if (mounted) {
+      final t = AppLocalizations.of(context)!;
+      final messenger = ScaffoldMessenger.of(context);
 
-    messenger.clearSnackBars();
-    messenger.showSnackBar(SnackBar(content: Text(t.bookdDataError)));
+      messenger.clearSnackBars();
+      messenger.showSnackBar(SnackBar(content: Text(t.bookdDataError)));
+    }
   }
 }

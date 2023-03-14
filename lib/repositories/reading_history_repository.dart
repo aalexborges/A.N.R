@@ -52,20 +52,8 @@ class ReadingHistoryRepository {
     return progress;
   }
 
-  Future<ContinueReading?> continueReading(Book book) async {
+  Future<Stream<DatabaseEvent>> continueReading(Book book) async {
     final ref = await baseRef;
-    final data = await ref.child(book.slug).orderByKey().limitToLast(1).get();
-
-    if (!data.exists) return null;
-
-    final item = data.children.first;
-    final id = item.key;
-
-    if (id == null || id.isEmpty) return null;
-
-    return ContinueReading(
-      id: Chapter.firebaseIdToId(id),
-      progress: double.parse(item.value.toString()),
-    );
+    return ref.child(book.slug).orderByKey().limitToLast(1).onValue;
   }
 }
