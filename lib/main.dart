@@ -3,6 +3,7 @@ import 'package:anr/firebase_options.dart';
 import 'package:anr/repositories/auth_repository.dart';
 import 'package:anr/repositories/book_repository.dart';
 import 'package:anr/repositories/theme_repository.dart';
+import 'package:anr/repositories/user_repository.dart';
 import 'package:anr/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -81,9 +82,11 @@ class _MyAppState extends State<MyApp> {
 void registerSingletons(SharedPreferences prefs) {
   GetIt.I.registerSingleton<AuthRepository>(AuthRepository());
   GetIt.I.registerSingleton<ThemeRepository>(ThemeRepository(prefs));
+  GetIt.I.registerLazySingleton<UserRepository>(() => const UserRepository());
   GetIt.I.registerLazySingleton<BookRepository>(() => const BookRepository());
 }
 
 AuthRepository get authRepository => GetIt.I.get<AuthRepository>();
 BookRepository get bookRepository => GetIt.I.get<BookRepository>();
+UserRepository get userRepository => GetIt.I.get<UserRepository>();
 ThemeRepository get themeRepository => GetIt.I.get<ThemeRepository>();

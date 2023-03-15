@@ -1,5 +1,5 @@
+import 'package:anr/main.dart';
 import 'package:anr/models/scan.dart';
-import 'package:anr/repositories/user_repository.dart';
 import 'package:anr/router.dart';
 import 'package:anr/stores/home_store.dart';
 import 'package:anr/widgets/book_list_item.dart';
@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           IconButton(onPressed: () => context.push(ScreenPaths.search), icon: const Icon(Icons.search_rounded)),
           IconButton(onPressed: () => context.push(ScreenPaths.favorites), icon: const Icon(Icons.favorite_rounded)),
           IconButton(
-            onPressed: () => UserRepository.showModal(context),
+            onPressed: () => userRepository.showModal(context),
             icon: SizedBox.fromSize(
               size: const Size(24, 24),
               child: CircleAvatar(backgroundImage: CachedNetworkImageProvider(photoURL, maxHeight: 48, maxWidth: 48)),
