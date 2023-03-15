@@ -23,5 +23,9 @@
   "bookContentError": "Something went wrong while getting book content",
   "noFavorites": "Oops! You don't have any books in your favorites list yet",
   "noFavoritesByScan": "Oops! You don't have any books by scan {scan} in your favorites list yet",
-  "getFavoritesError": "Oops! Something went wrong getting your favorite book list"
+  "getFavoritesError": "Oops! Something went wrong getting your favorite book list",
+  "changeTheme": "Change theme",
+  "darkTheme": "Dark",
+  "lightTheme": "Light",
+  "systemTheme": "System"
 }

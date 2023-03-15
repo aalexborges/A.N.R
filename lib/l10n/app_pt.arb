@@ -23,5 +23,9 @@
   "bookContentError": "Algo deu errado ao obter o conteúdo do livro",
   "noFavorites": "Ops! Você ainda não tem nenhum livro na sua lista de favoritos",
   "noFavoritesByScan": "Ops! Você ainda não tem nenhum livro da scan {scan} na sua lista de favoritos",
-  "getFavoritesError": "Ops! Algo deu errado ao obter a sua lista de livros favoritos"
+  "getFavoritesError": "Ops! Algo deu errado ao obter a sua lista de livros favoritos",
+  "changeTheme": "Mudar tema",
+  "darkTheme": "Escuro",
+  "lightTheme": "Claro",
+  "systemTheme": "Mesmo do sistema"
 }
