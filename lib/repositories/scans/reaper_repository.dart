@@ -124,8 +124,17 @@ class ReaperRepository extends ScanBaseRepository {
           );
         }
 
-        final sources = (content['images'] ?? []) as List<String>;
-        return Content(key: key, chapter: chapter, items: sources);
+        final List<dynamic> sources = content['images'] is List ? content['images'] : [];
+        return Content(
+          key: key,
+          chapter: chapter,
+          items: sources.map<String>((e) {
+            final src = e.toString();
+
+            if (src.contains('https://')) return src;
+            return '$apiBaseURL/$src'.replaceAll('$apiBaseURL//', '').trim();
+          }).toList(),
+        );
       },
     );
   }
