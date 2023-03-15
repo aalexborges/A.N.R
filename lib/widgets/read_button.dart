@@ -29,11 +29,9 @@ class _ReadButtonState extends State<ReadButton> {
     if (widget.data == null) return;
 
     final index = widget.data!.chapters.indexWhere((e) => e.id == id);
-    if (index > 0) {
-      setState(() {
-        _continueBy = widget.data!.chapters[index - 1].id;
-      });
-    }
+    setState(() {
+      _continueBy = index > 0 ? widget.data!.chapters[index - 1].id : id;
+    });
   }
 
   Future<void> _init() async {
@@ -47,7 +45,6 @@ class _ReadButtonState extends State<ReadButton> {
         final progress = double.parse(item.values.first.toString());
 
         if (progress > 95) return _next(id);
-
         return setState(() {
           _continueBy = id;
         });
