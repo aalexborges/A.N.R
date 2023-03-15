@@ -13,7 +13,10 @@ class Chapter extends ChangeNotifier {
 
   String get chapter => formatIdToChapterString(id);
 
-  String get firebaseId => id.toString().replaceAll('.', '_');
+  String get firebaseId {
+    final stringId = id.toString().replaceAll('.', '_');
+    return id <= 9 ? '0$stringId' : stringId;
+  }
 
   double get readingProgress => _readingProgress;
 
