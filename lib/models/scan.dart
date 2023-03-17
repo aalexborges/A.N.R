@@ -6,6 +6,7 @@ enum Scan {
   glorious,
   prisma,
   reaper,
+  mode,
   mangaHost,
   muitoManga,
   mangaLivre,
@@ -25,6 +26,8 @@ extension ScansExtension on Scan {
         return 'prisma';
       case Scan.reaper:
         return 'reaper';
+      case Scan.mode:
+        return 'mode';
       case Scan.mangaHost:
         return 'manga host';
       case Scan.muitoManga:
@@ -48,6 +51,8 @@ extension ScansExtension on Scan {
         return PrismaRepository();
       case Scan.reaper:
         return ReaperRepository();
+      case Scan.mode:
+        return ModeRepository();
       case Scan.mangaHost:
         return MangaHostRepository();
       case Scan.muitoManga:

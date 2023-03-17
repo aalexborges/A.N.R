@@ -18,6 +18,7 @@ part 'scans/glorious_repository.dart';
 part 'scans/hunters_repository.dart';
 part 'scans/manga_host_repository.dart';
 part 'scans/manga_livre_repository.dart';
+part 'scans/mode_repository.dart';
 part 'scans/muito_manga_repository.dart';
 part 'scans/neox_repository.dart';
 part 'scans/prisma_repository.dart';
