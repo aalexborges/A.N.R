@@ -20,7 +20,6 @@ part 'scans/manga_host_repository.dart';
 part 'scans/manga_livre_repository.dart';
 part 'scans/muito_manga_repository.dart';
 part 'scans/neox_repository.dart';
-part 'scans/olympus_repository.dart';
 part 'scans/prisma_repository.dart';
 part 'scans/random_repository.dart';
 part 'scans/reaper_repository.dart';
