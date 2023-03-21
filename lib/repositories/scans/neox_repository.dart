@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class NeoxRepository extends ScanBaseRepository {
-  NeoxRepository();
+  const NeoxRepository();
 
   Scan get scan => Scan.neox;
 

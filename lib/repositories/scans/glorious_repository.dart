@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class GloriousRepository extends ScanBaseRepository {
-  GloriousRepository();
+  const GloriousRepository();
 
   Scan get scan => Scan.glorious;
 

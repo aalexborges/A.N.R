@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class ReaperRepository extends ScanBaseRepository {
-  ReaperRepository();
+  const ReaperRepository();
 
   Scan get scan => Scan.reaper;
 

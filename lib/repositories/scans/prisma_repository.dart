@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class PrismaRepository extends ScanBaseRepository {
-  PrismaRepository();
+  const PrismaRepository();
 
   Scan get scan => Scan.prisma;
 
