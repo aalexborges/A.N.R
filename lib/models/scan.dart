@@ -42,25 +42,25 @@ extension ScansExtension on Scan {
   ScanBaseRepository get repository {
     switch (this) {
       case Scan.neox:
-        return NeoxRepository();
+        return const NeoxRepository();
       case Scan.random:
-        return RandomRepository();
+        return const RandomRepository();
       case Scan.glorious:
-        return GloriousRepository();
+        return const GloriousRepository();
       case Scan.prisma:
-        return PrismaRepository();
+        return const PrismaRepository();
       case Scan.reaper:
-        return ReaperRepository();
+        return const ReaperRepository();
       case Scan.mode:
-        return ModeRepository();
+        return const ModeRepository();
       case Scan.mangaHost:
-        return MangaHostRepository();
+        return const MangaHostRepository();
       case Scan.muitoManga:
-        return MuitoMangaRepository();
+        return const MuitoMangaRepository();
       case Scan.mangaLivre:
-        return MangaLivreRepository();
+        return const MangaLivreRepository();
       case Scan.hunters:
-        return HuntersRepository();
+        return const HuntersRepository();
     }
   }
 }

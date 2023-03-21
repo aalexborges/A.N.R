@@ -26,6 +26,8 @@ part 'scans/random_repository.dart';
 part 'scans/reaper_repository.dart';
 
 abstract class ScanBaseRepository {
+  const ScanBaseRepository();
+
   List<String> get baseURLs => [];
 
   Map<String, String>? get headers => null;

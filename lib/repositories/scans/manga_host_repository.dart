@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class MangaHostRepository extends ScanBaseRepository {
-  MangaHostRepository();
+  const MangaHostRepository();
 
   Scan get scan => Scan.mangaHost;
 

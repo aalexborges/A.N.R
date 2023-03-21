@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class MuitoMangaRepository extends ScanBaseRepository {
-  MuitoMangaRepository();
+  const MuitoMangaRepository();
 
   Scan get scan => Scan.muitoManga;
 

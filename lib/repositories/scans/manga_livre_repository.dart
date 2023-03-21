@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class MangaLivreRepository extends ScanBaseRepository {
-  MangaLivreRepository();
+  const MangaLivreRepository();
 
   Scan get scan => Scan.mangaLivre;
 
@@ -48,7 +48,7 @@ class MangaLivreRepository extends ScanBaseRepository {
 
         for (final item in data) {
           books.add(Book(
-            src: item['image_thumb'] ?? item['image'],
+            src: item['image_thumb'] ?? item['image'] ?? item['cover_thumb'] ?? item['cover'],
             name: item['name'].toString().trim(),
             path: item['link'],
             scan: scan,

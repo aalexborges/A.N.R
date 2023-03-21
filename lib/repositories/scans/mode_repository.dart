@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class ModeRepository extends ScanBaseRepository {
-  ModeRepository();
+  const ModeRepository();
 
   Scan get scan => Scan.mode;
 

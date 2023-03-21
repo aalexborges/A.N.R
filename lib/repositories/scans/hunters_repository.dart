@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class HuntersRepository extends ScanBaseRepository {
-  HuntersRepository();
+  const HuntersRepository();
 
   Scan get scan => Scan.hunters;
 

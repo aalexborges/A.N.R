@@ -1,7 +1,7 @@
 part of '../scan_base_repository.dart';
 
 class RandomRepository extends ScanBaseRepository {
-  RandomRepository();
+  const RandomRepository();
 
   Scan get scan => Scan.random;
 
