@@ -29,6 +29,9 @@ class _SearchScreenState extends State<SearchScreen> {
       body: CustomScrollView(slivers: [
         SliverAppBar(
           centerTitle: false,
+          floating: true,
+          pinned: true,
+          snap: false,
           title: Observer(builder: (context) => Text(t.searchBook(_store.scan.value.toUpperCase()))),
           actions: [
             Observer(builder: (context) {
