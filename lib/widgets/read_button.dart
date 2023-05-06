@@ -42,7 +42,7 @@ class _ReadButtonState extends State<ReadButton> {
 
       if (item is Map) {
         final id = Chapter.firebaseIdToId(item.keys.first);
-        final progress = double.parse(item.values.first.toString());
+        final progress = double.parse(item.values.first['progress'].toString());
 
         if (progress > 95) return _next(id);
         return setState(() {
