@@ -37,7 +37,28 @@ class ReadingHistoryRepository {
     final ref = await baseRef;
     final progress = value >= 99 ? 100.0 : value;
 
-    await ref.child(chapter.bookSlug).child(chapter.firebaseId).set(progress);
+    final lastAddedItems = await ref.child(chapter.bookSlug).orderByChild('createdAt').limitToLast(1).get();
+    final child = ref.child(chapter.bookSlug).child(chapter.firebaseId);
+    final item = await child.get();
+
+    if (item.exists) {
+      await child.update({'progress': progress, 'createdAt': (item.value as dynamic)['createdAt']});
+    } else {
+      await child.set({'progress': progress, 'createdAt': DateTime.now().millisecondsSinceEpoch});
+    }
+
+    if (lastAddedItems.exists) {
+      final lastAdded = lastAddedItems.children.first;
+      final id = Chapter.firebaseIdToId(lastAdded.key!);
+
+      if (id > chapter.id) {
+        await lastAdded.ref.update({
+          'progress': (lastAdded.value as dynamic)['progress'],
+          'createdAt': DateTime.now().millisecondsSinceEpoch,
+        });
+      }
+    }
+
     chapter.setReadingProgress(value);
 
     return progress;
@@ -46,7 +67,7 @@ class ReadingHistoryRepository {
   Future<double?> progress(Chapter chapter) async {
     final ref = await baseRef;
     final data = await ref.child(chapter.bookSlug).child(chapter.firebaseId).get();
-    final progress = data.exists ? double.parse(data.value.toString()) : null;
+    final progress = data.exists ? double.parse((data.value as dynamic)['progress'].toString()) : null;
 
     if (progress != null) chapter.setReadingProgress(progress);
     return progress;
@@ -54,6 +75,6 @@ class ReadingHistoryRepository {
 
   Future<Stream<DatabaseEvent>> continueReading(Book book) async {
     final ref = await baseRef;
-    return ref.child(book.slug).orderByKey().limitToLast(1).onValue;
+    return ref.child(book.slug).orderByChild('createdAt').limitToLast(1).onValue;
   }
 }
