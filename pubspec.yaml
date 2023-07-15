@@ -49,6 +49,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   uses-material-design: true
   generate: true
+
+  assets:
+    - assets/logo.svg
+    - assets/google.svg
