@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.2.0
   cached_network_image: ^3.2.3
+  flutter_native_splash: ^2.3.1
 
 dev_dependencies:
   flutter_test:
@@ -55,3 +56,14 @@ flutter:
   assets:
     - assets/logo.svg
     - assets/google.svg
+
+flutter_native_splash:
+  color: "#fefbff"
+  image: assets/branding.png
+  color_dark: "#1b1b1f"
+  image_dark: assets/branding.png
+  android_12:
+    color: "#fefbff"
+    image: assets/branding.png
+    color_dark: "#1b1b1f"
+    image_dark: assets/branding.png
