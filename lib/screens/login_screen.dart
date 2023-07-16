@@ -1,4 +1,4 @@
-import 'package:anr/services/authentication_service.dart';
+import 'package:anr/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,9 +21,10 @@ class LoginScreen extends StatelessWidget {
                 child: SvgPicture.asset('assets/logo.svg', width: 104),
               ),
               ElevatedButton.icon(
+                key: const Key('sign_in_with_google_button'),
                 icon: SvgPicture.asset('assets/google.svg', width: 24),
                 label: Text(AppLocalizations.of(context)!.signInWithGoogle),
-                onPressed: () => AuthenticationService().signInWithGoogle(),
+                onPressed: () => authenticationService.signInWithGoogle(),
               ),
             ],
           ),
