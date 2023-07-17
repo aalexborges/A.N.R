@@ -15,9 +15,16 @@ class ThemeService extends ChangeNotifier {
     return ThemeMode.system;
   }
 
-  Future<void> changeTheme(ThemeMode theme) async {
-    notifyListeners();
+  IconData getIcon() {
+    final theme = getThemeMode();
 
-    await _prefs.setString('theme', theme.toString());
+    if (theme == ThemeMode.dark) return Icons.dark_mode_rounded;
+    if (theme == ThemeMode.light) return Icons.light_mode_rounded;
+    return Icons.auto_awesome_rounded;
+  }
+
+  Future<void> changeTheme(ThemeMode theme) async {
+    await _prefs.setString('theme', theme.name);
+    notifyListeners();
   }
 }

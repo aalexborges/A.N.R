@@ -1,13 +1,11 @@
 import 'package:anr/firebase_options.dart';
 import 'package:anr/routes.dart';
 import 'package:anr/service_locator.dart';
-import 'package:anr/services/theme_service.dart';
 import 'package:anr/utils/color_schemes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -30,16 +28,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  ThemeMode _themeMode = GetIt.I.get<ThemeService>().getThemeMode();
+  late ThemeMode _themeMode;
 
   void _themeListening() {
     setState(() {
-      _themeMode = GetIt.I.get<ThemeService>().getThemeMode();
+      _themeMode = themeService.getThemeMode();
     });
   }
 
   @override
   void initState() {
+    _themeMode = themeService.getThemeMode();
+
     FlutterNativeSplash.remove();
     themeService.addListener(_themeListening);
 
