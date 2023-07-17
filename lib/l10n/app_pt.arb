@@ -1,4 +1,13 @@
 {
   "appTitle": "A.N.R",
-  "signInWithGoogle": "Entrar com o Google"
+  "darkThemeOption": "Escuro",
+  "lightThemeOption": "Claro",
+  "optionChangeTheme": "Mudar tema",
+  "optionSignOut": "Sair",
+  "signInWithGoogle": "Entrar com o Google",
+  "systemThemeOption": "Mesmo do sistema",
+  "tooltipFavorites": "Favoritos",
+  "tooltipSearch": "Buscar",
+  "tooltipUser": "Usuário",
+  "userDefaultDisplayName": "Anônimo"
 }
