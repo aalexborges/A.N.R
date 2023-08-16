@@ -1,6 +1,7 @@
 enum Scan {
   neox,
   random,
+  glorious,
   prisma,
   reaper,
   mangaHost,
@@ -8,8 +9,14 @@ enum Scan {
   hunters;
 
   static Scan fromString(String value) {
-    return Scan.values.singleWhere((scan) => scan.value.toLowerCase() == value.toLowerCase().trim());
+    return Scan.values.singleWhere((scan) => scan.value == value.toLowerCase().trim());
   }
+
+  static bool isOldScan(String value) {
+    return Scan.oldScans.where((element) => element == value.toLowerCase()).isNotEmpty;
+  }
+
+  static const oldScans = ['muito manga'];
 }
 
 extension ScansExtension on Scan {
@@ -19,6 +26,8 @@ extension ScansExtension on Scan {
         return 'neox';
       case Scan.random:
         return 'random';
+      case Scan.glorious:
+        return 'glorious';
       case Scan.prisma:
         return 'prisma';
       case Scan.reaper:
