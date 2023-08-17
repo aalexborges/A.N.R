@@ -23,6 +23,9 @@ class HttpCache extends HiveObject {
   final int statusCode;
 
   @HiveField(5)
+  final Map<String, String> headers;
+
+  @HiveField(6)
   final DateTime createdAt;
 
   HttpCache({
@@ -31,6 +34,7 @@ class HttpCache extends HiveObject {
     required this.body,
     required this.method,
     required this.statusCode,
+    required this.headers,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -53,6 +57,7 @@ class HttpCache extends HiveObject {
       url: map['url'],
       body: map['body'],
       method: map['method'],
+      headers: map['headers'],
       statusCode: map['statusCode'],
       createdAt: map['createdAt'],
     );
@@ -66,6 +71,7 @@ class HttpCache extends HiveObject {
       url: url,
       body: response.body,
       method: method,
+      headers: response.headers,
       statusCode: response.statusCode,
     );
   }

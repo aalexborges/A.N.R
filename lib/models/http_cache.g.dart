@@ -22,14 +22,15 @@ class HttpCacheAdapter extends TypeAdapter<HttpCache> {
       body: fields[2] as String,
       method: fields[3] as String,
       statusCode: fields[4] as int,
-      createdAt: fields[5] as DateTime?,
+      headers: (fields[5] as Map).cast<String, String>(),
+      createdAt: fields[6] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, HttpCache obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,6 +42,8 @@ class HttpCacheAdapter extends TypeAdapter<HttpCache> {
       ..writeByte(4)
       ..write(obj.statusCode)
       ..writeByte(5)
+      ..write(obj.headers)
+      ..writeByte(6)
       ..write(obj.createdAt);
   }
 

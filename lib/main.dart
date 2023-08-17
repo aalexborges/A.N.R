@@ -1,4 +1,3 @@
-import 'package:anr/cache/http_cache_manager.dart';
 import 'package:anr/firebase_options.dart';
 import 'package:anr/models/http_cache.dart';
 import 'package:anr/routes.dart';
@@ -19,8 +18,6 @@ Future<void> main() async {
   await Hive.initFlutter();
 
   Hive.registerAdapter(HttpCacheAdapter());
-
-  if (!Hive.isBoxOpen(HttpCacheManager.boxKey)) await Hive.openBox(HttpCacheManager.boxKey);
 
   final prefs = await SharedPreferences.getInstance();
   setupServiceLocator(prefs);
