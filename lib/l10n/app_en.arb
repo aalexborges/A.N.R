@@ -3,6 +3,7 @@
   "darkThemeOption": "Dark",
   "favorites": "Favorites",
   "filterAll": "All",
+  "lastAddedSection": "{scan} - Last added",
   "lightThemeOption": "Light",
   "noFavorites": "You don't have any books in your favorites list yet.",
   "noFavoritesByScan": "You don't have any books by scan {scan} in your favorites list yet.",
