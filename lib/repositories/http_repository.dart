@@ -43,13 +43,13 @@ class HttpRepository {
   }
 
   Future<http.Response> tryGetRequestWithBaseURLs({
-    required Uri uri,
     required List<String> baseURLs,
+    Uri? uri,
     Map<String, String>? headers,
     bool forceUpdate = true,
   }) async {
     for (String baseURL in baseURLs) {
-      final url = Uri.parse('$baseURL${uri.path}');
+      final url = uri is Uri ? Uri.parse('$baseURL${uri.path}') : Uri.parse(baseURL);
       final response = await get(url, headers: headers, forceUpdate: forceUpdate);
 
       if (response.statusCode >= 200 && response.statusCode < 400) return response;
