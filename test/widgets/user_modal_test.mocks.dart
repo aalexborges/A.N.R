@@ -37,7 +37,14 @@ class _FakeIconData_0 extends _i1.SmartFake implements _i2.IconData {
 /// A class which mocks [UserRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserRepository extends _i1.Mock implements _i3.UserRepository {}
+class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
+  @override
+  String get uidOrReject => (super.noSuchMethod(
+        Invocation.getter(#uidOrReject),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+}
 
 /// A class which mocks [ThemeService].
 ///

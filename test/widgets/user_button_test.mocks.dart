@@ -24,4 +24,10 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
   MockUserRepository() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  String get uidOrReject => (super.noSuchMethod(
+        Invocation.getter(#uidOrReject),
+        returnValue: '',
+      ) as String);
 }
