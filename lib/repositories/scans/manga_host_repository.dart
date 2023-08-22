@@ -36,6 +36,31 @@ class MangaHostRepository extends BaseScanRepository {
   }
 
   @override
+  Future<List<BookItem>> search(String value, {bool forceUpdate = false}) async {
+    final response = await httpRepository.tryGetRequestWithBaseURLs(
+      uri: Uri(path: '/find/$value'),
+      headers: headers,
+      baseURLs: baseURLs,
+      forceUpdate: forceUpdate,
+    );
+
+    final document = parse(response.body);
+    final items = <BookItem>[];
+
+    for (final element in document.querySelectorAll('main tr')) {
+      final name = ScrapingUtil.getText(element: element, selector: 'h4 a');
+      final path = ScrapingUtil.getURL(element: element, selector: 'h4 a') ?? '';
+      final source = ScrapingUtil.getImageSource(element: element, selector: 'img') ?? '';
+
+      if (name.isEmpty || path.isEmpty || source.isEmpty) continue;
+
+      items.add(BookItem(name: name, path: path, src: source, scan: scan));
+    }
+
+    return items;
+  }
+
+  @override
   Map<String, String>? get headers {
     return {
       'Origin': baseURLs[0],

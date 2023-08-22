@@ -33,4 +33,30 @@ class MangaLivreRepository extends BaseScanRepository {
 
     return items;
   }
+
+  @override
+  Future<List<BookItem>> search(String value, {bool forceUpdate = false}) async {
+    final url = baseURL.replace(path: '/lib/search/series.json');
+    final response = await httpRepository.post(
+      url,
+      body: {'search': value},
+      headers: {"x-requested-with": "XMLHttpRequest"},
+      forceUpdate: forceUpdate,
+    );
+
+    final items = <BookItem>[];
+    final data = jsonDecode(response.body);
+
+    for (final item in data['series'] ?? List.empty(growable: false)) {
+      items.add(BookItem(
+        src: item['image_thumb'] ?? item['image'] ?? item['cover_thumb'] ?? item['cover'],
+        name: item['name'].toString().trim(),
+        path: item['link'],
+        scan: scan,
+        webID: item['id_serie'],
+      ));
+    }
+
+    return items;
+  }
 }
