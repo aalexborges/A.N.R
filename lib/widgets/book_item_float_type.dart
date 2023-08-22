@@ -7,7 +7,7 @@ class BookItemFloatType extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (type is String) {
+    if (type is String && type!.isNotEmpty) {
       return Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(80)),
         child: Padding(
