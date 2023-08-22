@@ -1,7 +1,8 @@
+import 'package:anr/repositories/scans/base_scan_repository.dart';
+
 enum Scan {
   neox,
   random,
-  glorious,
   prisma,
   reaper,
   mangaHost,
@@ -17,6 +18,25 @@ enum Scan {
   }
 
   static const oldScans = ['muito manga'];
+
+  static BaseScanRepository repositoryBy(Scan scan) {
+    switch (scan) {
+      case Scan.neox:
+        return NeoxRepository.instance;
+      case Scan.random:
+        return RandomRepository.instance;
+      case Scan.prisma:
+        return PrismaRepository.instance;
+      case Scan.reaper:
+        return ReaperRepository.instance;
+      case Scan.mangaHost:
+        return MangaHostRepository.instance;
+      case Scan.mangaLivre:
+        return MangaLivreRepository.instance;
+      case Scan.hunters:
+        return HuntersRepository.instance;
+    }
+  }
 }
 
 extension ScansExtension on Scan {
@@ -26,8 +46,6 @@ extension ScansExtension on Scan {
         return 'neox';
       case Scan.random:
         return 'random';
-      case Scan.glorious:
-        return 'glorious';
       case Scan.prisma:
         return 'prisma';
       case Scan.reaper:
@@ -40,4 +58,6 @@ extension ScansExtension on Scan {
         return 'hunters';
     }
   }
+
+  BaseScanRepository get repository => Scan.repositoryBy(this);
 }
