@@ -24,4 +24,10 @@ class NeoxRepository extends BaseScanRepository {
 
     return ScrapingUtil.genericSearch(document: parse(response.body), scan: scan);
   }
+
+  @override
+  Future<BookData> data(BookItem bookItem, {bool forceUpdate = false}) async {
+    final response = await httpRepository.get(Uri.parse(bookItem.path), forceUpdate: forceUpdate);
+    return ScrapingUtil.genericData(document: parse(response.body), bookItem: bookItem);
+  }
 }
