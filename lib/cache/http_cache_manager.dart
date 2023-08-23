@@ -23,7 +23,7 @@ class HttpCacheManager {
 
     if (cache is! HttpCache) return null;
 
-    if (DateTime.now().difference(cache.createdAt).inMinutes > 5) {
+    if (DateTime.now().difference(cache.createdAt).inMinutes > 10) {
       await cache.delete();
       return null;
     }
