@@ -2,10 +2,10 @@ import 'package:anr/models/book_item.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/utils/route_paths.dart';
 import 'package:anr/widgets/book_item_float_type.dart';
+import 'package:anr/widgets/shimmer_item.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shimmer/shimmer.dart';
 
 class BookItemButton extends StatelessWidget {
   const BookItemButton({super.key, this.bookItem});
@@ -27,28 +27,18 @@ class BookItemButton extends StatelessWidget {
     );
   }
 
-  Widget shimmer(BuildContext context) {
-    final theme = Theme.of(context);
-    final brightness = theme.brightness;
-    final lightness = brightness == Brightness.dark ? 0.32 : 0.93;
-    final color = HSLColor.fromColor(theme.colorScheme.surfaceVariant).withLightness(lightness).toColor();
-
-    return Shimmer.fromColors(
-      key: const Key('book_item_button_shimmer'),
-      highlightColor: color,
-      baseColor: theme.colorScheme.surfaceVariant,
-      child: const Card(
-        margin: EdgeInsets.all(0),
-        child: SizedBox(
-          width: BookItemButtonSizes.width,
-          height: BookItemButtonSizes.height,
-        ),
-      ),
-    );
-  }
-
   Widget content(BuildContext context) {
-    if (bookItem is! BookItem) return shimmer(context);
+    if (bookItem is! BookItem) {
+      return const ShimmerItem(
+        child: Card(
+          margin: EdgeInsets.all(0),
+          child: SizedBox(
+            width: BookItemButtonSizes.width,
+            height: BookItemButtonSizes.height,
+          ),
+        ),
+      );
+    }
 
     return Stack(
       fit: StackFit.expand,
