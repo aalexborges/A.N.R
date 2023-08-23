@@ -37,4 +37,23 @@ class FavoritesRepository {
 
     return favorites.whereType<BookItem>().toList();
   }
+
+  Future<bool> isFavorite(String slug) async {
+    final item = await databaseRepository.once('$_node/$slug');
+    return item.snapshot.exists;
+  }
+
+  Future<bool> toggleFavorite(bool isFavorite, BookItem bookItem) async {
+    try {
+      if (isFavorite) {
+        await databaseRepository.delete(_node, bookItem.slug);
+      } else {
+        await databaseRepository.add('$_node/${bookItem.slug}', bookItem.toMap());
+      }
+
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
 }
