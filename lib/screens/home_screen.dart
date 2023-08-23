@@ -60,8 +60,8 @@ class __HomeBodyState extends State<_HomeBody> {
 
   @override
   void initState() {
-    loadItems();
     super.initState();
+    loadItems();
   }
 
   @override
