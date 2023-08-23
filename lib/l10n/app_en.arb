@@ -1,5 +1,6 @@
 {
   "appTitle": "A.N.R",
+  "bookDetails": "BOOK DETAILS",
   "darkThemeOption": "Dark",
   "favorites": "Favorites",
   "filterAll": "All",
@@ -18,5 +19,6 @@
   "tooltipFavorites": "Favorites",
   "tooltipSearch": "Search",
   "tooltipUser": "User",
+  "unknown": "unknown",
   "userDefaultDisplayName": "Anonymous"
 }
