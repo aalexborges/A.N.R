@@ -27,7 +27,7 @@ class BookDataSubtitleInfos extends StatelessWidget {
           children: [
             Text('${totalChapters ?? '?'}/${lastChapter ?? '?'}', style: textStyle),
             const DotSeparator(),
-            Text(type ?? i10n.unknown.toUpperCase(), style: textStyle),
+            Text((type ?? i10n.unknown).toUpperCase(), style: textStyle),
             const DotSeparator(),
             Text(scan, style: textStyle),
           ],
