@@ -40,13 +40,6 @@ class _BookScreenAppBarState extends State<BookScreenAppBar> {
   }
 
   @override
-  void dispose() {
-    widget.controller.removeListener(onScrollListener);
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SliverAppBar(
       title: pinned ? Text(widget.bookItem.name) : null,
