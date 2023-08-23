@@ -1,3 +1,4 @@
+import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
 import 'package:anr/models/scan.dart';
 import 'package:html/dom.dart';
@@ -80,6 +81,41 @@ class ScrapingUtil {
     }
 
     return items;
+  }
+
+  static BookData genericData({required Document document, required BookItem bookItem}) {
+    final element = document.body;
+
+    if (element is! Element) throw Exception('Invalid document body');
+
+    final sinopse = getSinopse(element: element);
+    final categories = getCategories(element: element);
+    final type = bookItem.type ?? getTypeByTable(element);
+
+    return BookData(sinopse: sinopse, categories: categories, bookItem: bookItem, type: type);
+  }
+
+  static String getSinopse({required Element element, String? selector}) {
+    return element.querySelector(selector ?? '.manga-excerpt')?.text.trim() ?? '';
+  }
+
+  static List<String> getCategories({required Element element, String? selector}) {
+    final items = element.querySelectorAll(selector ?? '.genres-content a').map((e) => e.text.trim());
+    return items.where((item) => item.isNotEmpty).toList();
+  }
+
+  static String? getTypeByTable(Element element, {String? selector, String? keySelector, String? valueSelector}) {
+    for (final item in element.querySelectorAll(selector ?? '.post-content_item')) {
+      final key = getText(element: item, selector: keySelector ?? 'h5').toLowerCase();
+
+      if (key.contains('tipo') || key.contains('type')) {
+        final type = getText(element: item, selector: valueSelector ?? '.summary-content');
+
+        if (type.isNotEmpty) return type;
+      }
+    }
+
+    return null;
   }
 
   static String? _typeByScan({required Element element, required Scan scan}) {
