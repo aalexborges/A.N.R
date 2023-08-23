@@ -33,6 +33,10 @@ class _BookScreenState extends State<BookScreen> {
     });
   }
 
+  void toDetails() {
+    if (bookData is BookData) context.push(RoutePaths.details, extra: bookData);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -114,7 +118,7 @@ class _BookScreenState extends State<BookScreen> {
                           Container(
                             margin: const EdgeInsets.only(top: 4),
                             child: TextButton(
-                              onPressed: bookData is BookData ? () => context.push(RoutePaths.details) : null,
+                              onPressed: bookData is BookData ? toDetails : null,
                               child: Text(i10n.bookDetails),
                             ),
                           ),
