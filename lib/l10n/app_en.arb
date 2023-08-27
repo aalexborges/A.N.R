@@ -1,6 +1,7 @@
 {
   "appTitle": "A.N.R",
   "bookDetails": "BOOK DETAILS",
+  "continueReading": "Continue reading from chapter {chapter}",
   "darkThemeOption": "Dark",
   "detailsTileAmountOfChapters": "Amount of chapters:",
   "detailsTileCategories": "Categories:",
@@ -16,6 +17,7 @@
   "noFavoritesByScan": "You don't have any books by scan {scan} in your favorites list yet.",
   "optionChangeTheme": "Change theme",
   "optionSignOut": "Sign out",
+  "readChapter": "Read chapter {chapter}",
   "refresh": "Refresh",
   "searchBook": "{scan} - Search book...",
   "searchInputHint": "Enter book name",
