@@ -1,10 +1,14 @@
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
+import 'package:anr/models/chapter.dart';
+import 'package:anr/models/reader.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/utils/route_paths.dart';
 import 'package:anr/widgets/book_data_subtitle_infos.dart';
 import 'package:anr/widgets/book_item_button.dart';
 import 'package:anr/widgets/book_screen_app_bar.dart';
+import 'package:anr/widgets/continue_reading.dart';
+import 'package:anr/widgets/reading_progress.dart';
 import 'package:anr/widgets/sinopse.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -25,8 +29,10 @@ class _BookScreenState extends State<BookScreen> {
 
   BookData? bookData;
 
+  List<Chapter> get chapters => bookData?.chapters ?? List.empty(growable: false);
+
   Future<void> loadBookData({bool forceUpdate = false}) async {
-    final data = await widget.bookItem.scan.repository.data(widget.bookItem, forceUpdate: forceUpdate);
+    final data = await widget.bookItem.getData(forceUpdate: forceUpdate);
 
     setState(() {
       bookData = data;
@@ -116,14 +122,34 @@ class _BookScreenState extends State<BookScreen> {
                             maxLines: 3,
                           ),
                           Container(
-                            margin: const EdgeInsets.only(top: 4),
+                            margin: const EdgeInsets.only(top: 2, bottom: 2),
                             child: TextButton(
                               onPressed: bookData is BookData ? toDetails : null,
                               child: Text(i10n.bookDetails),
                             ),
                           ),
+                          ContinueReading(bookData: bookData),
                         ]),
                       ),
+                    ),
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final chapter = chapters[index];
+
+                        return ListTile(
+                          title: Text(chapter.name),
+                          trailing: ReadingProgress(slug: widget.bookItem.slug, firebaseId: chapter.firebaseId),
+                          onTap: () {
+                            context.push(
+                              RoutePaths.reader,
+                              extra: Reader(
+                                bookData: bookData!,
+                                chapterIndex: index,
+                              ),
+                            );
+                          },
+                        );
+                      }, childCount: chapters.length),
                     ),
                   ],
                 ),
