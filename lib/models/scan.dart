@@ -5,6 +5,7 @@ enum Scan {
   random,
   prisma,
   reaper,
+  glorious,
   mangaHost,
   mangaLivre,
   hunters;
@@ -29,6 +30,8 @@ enum Scan {
         return PrismaRepository.instance;
       case Scan.reaper:
         return ReaperRepository.instance;
+      case Scan.glorious:
+        return GloriousRepository.instance;
       case Scan.mangaHost:
         return MangaHostRepository.instance;
       case Scan.mangaLivre:
@@ -50,6 +53,8 @@ extension ScansExtension on Scan {
         return 'prisma';
       case Scan.reaper:
         return 'reaper';
+      case Scan.glorious:
+        return 'glorious';
       case Scan.mangaHost:
         return 'manga host';
       case Scan.mangaLivre:
