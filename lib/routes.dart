@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
+import 'package:anr/models/reader.dart';
 import 'package:anr/screens/book_screen.dart';
 import 'package:anr/screens/details_screen.dart';
 import 'package:anr/screens/favorites_screen.dart';
 import 'package:anr/screens/home_screen.dart';
 import 'package:anr/screens/login_screen.dart';
+import 'package:anr/screens/reader_screen.dart';
 import 'package:anr/screens/search_screen.dart';
 import 'package:anr/utils/route_paths.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -23,6 +25,7 @@ class AppRouter {
       GoRoute(path: RoutePaths.home, builder: (context, state) => const HomeScreen()),
       GoRoute(path: RoutePaths.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: RoutePaths.search, builder: (context, state) => const SearchScreen()),
+      GoRoute(path: RoutePaths.reader, builder: (context, state) => ReaderScreen(reader: state.extra as Reader)),
       GoRoute(path: RoutePaths.details, builder: (context, state) => DetailsScreen(bookData: state.extra as BookData)),
       GoRoute(path: RoutePaths.favorites, builder: (context, state) => const FavoritesScreen()),
     ],
