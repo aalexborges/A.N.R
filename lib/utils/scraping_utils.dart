@@ -1,5 +1,6 @@
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
+import 'package:anr/models/chapter.dart';
 import 'package:anr/models/scan.dart';
 import 'package:html/dom.dart';
 
@@ -52,7 +53,7 @@ class ScrapingUtil {
 
     for (final element in document.querySelectorAll('#loop-content .row div.page-item-detail')) {
       final name = getText(element: element, selector: 'h3 a');
-      final type = _typeByScan(element: element, scan: scan);
+      final type = typeByScan(element: element, scan: scan);
 
       final path = getURL(element: element, selector: 'h3 a') ?? '';
       final source = getImageSource(element: element, selector: 'img') ?? '';
@@ -70,7 +71,7 @@ class ScrapingUtil {
 
     for (final element in document.querySelectorAll('.c-tabs-item div.row')) {
       final name = getText(element: element, selector: 'h3 a');
-      final type = _typeByScan(element: element, scan: scan);
+      final type = typeByScan(element: element, scan: scan);
 
       final path = getURL(element: element, selector: 'h3 a') ?? '';
       final source = getImageSource(element: element, selector: 'img') ?? '';
@@ -92,7 +93,31 @@ class ScrapingUtil {
     final categories = getCategories(element: element);
     final type = bookItem.type ?? getTypeByTable(element);
 
-    return BookData(sinopse: sinopse, categories: categories, bookItem: bookItem, type: type);
+    final chapters = <Chapter>[];
+
+    for (final element in document.querySelectorAll('.main li.wp-manga-chapter > a')) {
+      final url = getURL(element: element) ?? '';
+      final name = getText(element: element);
+
+      if (url.isEmpty && name.isNotEmpty) continue;
+
+      chapters.add(Chapter(id: Chapter.idByName(name), name: name, path: url));
+    }
+
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return BookData(sinopse: sinopse, categories: categories, bookItem: bookItem, chapters: chapters, type: type);
+  }
+
+  static List<String> genericContent({required Document document}) {
+    final content = <String>[];
+
+    for (final element in document.querySelectorAll('.reading-content img')) {
+      final source = getImageSource(element: element) ?? '';
+
+      if (source.isNotEmpty) content.add(source);
+    }
+
+    return content;
   }
 
   static String getSinopse({required Element element, String? selector}) {
@@ -118,9 +143,10 @@ class ScrapingUtil {
     return null;
   }
 
-  static String? _typeByScan({required Element element, required Scan scan}) {
+  static String? typeByScan({required Element element, required Scan scan}) {
     if (scan == Scan.neox) return getText(element: element, selector: 'span');
     if (scan == Scan.hunters) return getText(element: element, selector: 'span.manga-type');
+    if (scan == Scan.glorious) return getText(element: element, selector: 'span');
 
     return null;
   }
