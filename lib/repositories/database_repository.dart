@@ -19,7 +19,7 @@ class DatabaseRepository {
 
   Future<void> add(String node, Map<String, dynamic> data) async {
     await init();
-    await _database!.child(node).push().set(data);
+    await _database!.child(node).set(data);
   }
 
   Future<DataSnapshot> get(String node) async {
