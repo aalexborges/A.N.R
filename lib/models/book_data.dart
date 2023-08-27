@@ -1,14 +1,22 @@
 import 'dart:convert';
 
 import 'package:anr/models/book_item.dart';
+import 'package:anr/models/chapter.dart';
 
 class BookData {
-  const BookData({required this.sinopse, required this.categories, required this.bookItem, this.type});
+  const BookData({
+    required this.sinopse,
+    required this.bookItem,
+    required this.categories,
+    required this.chapters,
+    this.type,
+  });
 
   final BookItem bookItem;
 
   final String sinopse;
   final List<String> categories;
+  final List<Chapter> chapters;
   final String? type;
 
   Map<String, dynamic> toMap() {
@@ -21,6 +29,7 @@ class BookData {
     return BookData(
       type: map['type'],
       sinopse: map['sinopse'],
+      chapters: map['chapters'] is List<Chapter> ? map['chapters'].map((e) => e.toMap()).toList() : map['chapters'],
       categories: map['categories'],
       bookItem: map['bookItem'] is BookItem ? map['bookItem'] : BookItem.fromMap(map['bookItem']),
     );
