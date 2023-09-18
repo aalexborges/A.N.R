@@ -1,6 +1,7 @@
 {
   "appTitle": "A.N.R",
   "bookDetails": "DETALHES DO LIVRO",
+  "contentImageError": "Erro ao obter {received} das {expected} imagens do capítulo",
   "continueReading": "Continuar leitura do capítulo {chapter}",
   "darkThemeOption": "Escuro",
   "detailsTileAmountOfChapters": "Quantidade de capítulos:",

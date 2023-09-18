@@ -1,6 +1,7 @@
 {
   "appTitle": "A.N.R",
   "bookDetails": "BOOK DETAILS",
+  "contentImageError": "Error getting {received} out of {expected} chapter images",
   "continueReading": "Continue reading from chapter {chapter}",
   "darkThemeOption": "Dark",
   "detailsTileAmountOfChapters": "Amount of chapters:",

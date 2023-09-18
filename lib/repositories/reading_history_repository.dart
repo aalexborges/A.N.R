@@ -6,6 +6,14 @@ import 'package:firebase_database/firebase_database.dart';
 class ReadingHistoryRepository {
   final _node = 'reading_history';
 
+  Future<double> progress(String slug, String firebaseId) async {
+    final event = await databaseRepository.once('$_node/$slug/$firebaseId/progress');
+    final snapshot = event.snapshot;
+
+    if (snapshot.exists) return double.tryParse(snapshot.value.toString()) ?? 0;
+    return 0;
+  }
+
   Future<void> update({required BookItem bookItem, required Chapter chapter, required double progress}) async {
     final child = await databaseRepository.child('$_node/${bookItem.slug}');
 

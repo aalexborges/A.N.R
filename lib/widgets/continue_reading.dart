@@ -50,7 +50,7 @@ class _ContinueReadingState extends State<ContinueReading> {
   Widget build(BuildContext context) {
     final i10n = AppLocalizations.of(context)!;
 
-    if (widget.bookData is! BookData) return const SizedBox();
+    if (widget.bookData is! BookData || _stream is! Stream || _chapters.isEmpty) return const SizedBox();
 
     return StreamBuilder(
       stream: _stream,
@@ -82,6 +82,8 @@ class _ContinueReadingState extends State<ContinueReading> {
   }
 
   Chapter? _continueBy(DatabaseEvent event) {
+    if (!event.snapshot.exists) return null;
+
     final item = event.snapshot.value;
 
     if (item is Map) {
@@ -101,6 +103,6 @@ class _ContinueReadingState extends State<ContinueReading> {
 
   String _textByChapter(AppLocalizations i10n, Chapter? continueBy) {
     if (continueBy is Chapter) return i10n.continueReading(continueBy.chapterNumber);
-    return i10n.readChapter(_chapters.last);
+    return i10n.readChapter(_chapters.last.chapterNumber);
   }
 }

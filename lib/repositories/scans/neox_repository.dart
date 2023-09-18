@@ -27,13 +27,26 @@ class NeoxRepository extends BaseScanRepository {
 
   @override
   Future<BookData> data(BookItem bookItem, {bool forceUpdate = false}) async {
-    final response = await httpRepository.get(Uri.parse(bookItem.path), forceUpdate: forceUpdate);
-    return ScrapingUtil.genericData(document: parse(response.body), bookItem: bookItem);
+    final uri = Uri.parse(bookItem.path);
+    final chapterUri = uri.replace(path: '${uri.path}ajax/chapters');
+
+    final response = await httpRepository.get(uri, forceUpdate: forceUpdate);
+    final chapterResponse = await httpRepository.post(
+      chapterUri,
+      forceUpdate: forceUpdate,
+      headers: {"x-requested-with": "XMLHttpRequest"},
+    );
+
+    return ScrapingUtil.genericData(
+      bookItem: bookItem,
+      document: parse(response.body),
+      chapterDocument: parse(chapterResponse.body),
+    );
   }
 
   @override
-  Future<List<String>> content(Chapter chapter) async {
+  Future<Content> content(Chapter chapter) async {
     final response = await httpRepository.get(Uri.parse(chapter.path));
-    return ScrapingUtil.genericContent(document: parse(response.body));
+    return ScrapingUtil.genericContent(document: parse(response.body), title: chapter.name);
   }
 }

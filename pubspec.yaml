@@ -41,6 +41,7 @@ dependencies:
   flutter_svg: ^2.0.7
   hive_flutter: ^1.1.0
   merge_images: ^2.0.0-nullsafety
+  flutter_html: ^3.0.0-beta.2
   firebase_auth: ^4.7.0
   firebase_core: ^2.15.0
   google_sign_in: ^6.1.4

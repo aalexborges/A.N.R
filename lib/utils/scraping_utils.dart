@@ -1,6 +1,7 @@
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
 import 'package:anr/models/chapter.dart';
+import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
 import 'package:html/dom.dart';
 
@@ -84,7 +85,7 @@ class ScrapingUtil {
     return items;
   }
 
-  static BookData genericData({required Document document, required BookItem bookItem}) {
+  static BookData genericData({required Document document, required BookItem bookItem, Document? chapterDocument}) {
     final element = document.body;
 
     if (element is! Element) throw Exception('Invalid document body');
@@ -94,8 +95,9 @@ class ScrapingUtil {
     final type = bookItem.type ?? getTypeByTable(element);
 
     final chapters = <Chapter>[];
+    final chapterDoc = chapterDocument is Document ? chapterDocument : document;
 
-    for (final element in document.querySelectorAll('.main li.wp-manga-chapter > a')) {
+    for (final element in chapterDoc.querySelectorAll('.main li.wp-manga-chapter > a')) {
       final url = getURL(element: element) ?? '';
       final name = getText(element: element);
 
@@ -108,16 +110,18 @@ class ScrapingUtil {
     return BookData(sinopse: sinopse, categories: categories, bookItem: bookItem, chapters: chapters, type: type);
   }
 
-  static List<String> genericContent({required Document document}) {
-    final content = <String>[];
+  static Future<Content> genericContent({required Document document, required String title}) async {
+    final novelContent = document.querySelector('.reading-content .text-left');
+    if (novelContent is Element) return Content(title: title, text: novelContent.innerHtml.trim());
+
+    final sources = <String>[];
 
     for (final element in document.querySelectorAll('.reading-content img')) {
       final source = getImageSource(element: element) ?? '';
-
-      if (source.isNotEmpty) content.add(source);
+      if (source.isNotEmpty) sources.add(source);
     }
 
-    return content;
+    return Content(title: title, images: sources);
   }
 
   static String getSinopse({required Element element, String? selector}) {

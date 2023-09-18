@@ -24,4 +24,23 @@ class RandomRepository extends BaseScanRepository {
 
     return ScrapingUtil.genericSearch(document: parse(response.body), scan: scan);
   }
+
+  @override
+  Future<BookData> data(BookItem bookItem, {bool forceUpdate = false}) async {
+    final uri = Uri.parse(bookItem.path);
+    final chapterUri = uri.replace(path: '${uri.path}ajax/chapters');
+
+    final response = await httpRepository.get(uri, forceUpdate: forceUpdate);
+    final chapterResponse = await httpRepository.post(
+      chapterUri,
+      forceUpdate: forceUpdate,
+      headers: {"x-requested-with": "XMLHttpRequest"},
+    );
+
+    return ScrapingUtil.genericData(
+      bookItem: bookItem,
+      document: parse(response.body),
+      chapterDocument: parse(chapterResponse.body),
+    );
+  }
 }

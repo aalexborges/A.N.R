@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/book_item.dart';
 import 'package:anr/models/chapter.dart';
+import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/service_locator.dart';
 import 'package:anr/utils/scraping_utils.dart';
@@ -23,7 +24,7 @@ abstract class BaseScanRepository {
 
   Future<List<BookItem>> lastAdded({forceUpdate = false}) async => [];
   Future<List<BookItem>> search(String value, {bool forceUpdate = false}) async => [];
-  Future<List<String>> content(Chapter chapter) async => [];
+  Future<Content> content(Chapter chapter) async => const Content(title: '');
 
   Future<BookData> data(BookItem bookItem, {bool forceUpdate = false}) async {
     return BookData(sinopse: '', categories: [], chapters: [], bookItem: bookItem);
