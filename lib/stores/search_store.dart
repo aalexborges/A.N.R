@@ -18,10 +18,10 @@ abstract class _SearchStore with Store {
   ObservableList<Book> results = ObservableList();
 
   @action
-  Future<void> onSearch(String value) async {
+  Future<void> onSearch(String value, {bool forceUpdate = false}) async {
     isLoading = true;
 
-    final data = await scan.repository.search(value);
+    final data = await scan.repository.search(value, forceUpdate: forceUpdate);
 
     results = ObservableList()..addAll(data);
     isLoading = false;

@@ -27,5 +27,6 @@
   "changeTheme": "Mudar tema",
   "darkTheme": "Escuro",
   "lightTheme": "Claro",
-  "systemTheme": "Mesmo do sistema"
+  "systemTheme": "Mesmo do sistema",
+  "unknown": "desconhecido"
 }

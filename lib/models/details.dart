@@ -53,7 +53,7 @@ class Details {
   factory Details.fromMap(Map<String, dynamic> map) {
     return Details(
       name: map['name'],
-      scan: map['scan'] is String ? scanByValue(map['scan']) : map['scan'],
+      scan: map['scan'] is String ? Scan.fromString(map['scan']) : map['scan'],
       sinopse: map['sinopse'],
       categories: map['categories'],
       chapterLength: map['chapterLength'],

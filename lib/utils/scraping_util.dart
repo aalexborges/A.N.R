@@ -1,102 +1,148 @@
+import 'package:anr/models/book.dart';
+import 'package:anr/models/book_data.dart';
+import 'package:anr/models/chapter.dart';
+import 'package:anr/models/scan.dart';
 import 'package:html/dom.dart';
 
 class ScrapingUtil {
-  const ScrapingUtil(this.element);
+  static Element? querySelector(String selector, {required Element element}) {
+    return element.querySelector(selector);
+  }
 
-  final Element element;
+  static String? getAttribute({required String attribute, required Element element, String? selector}) {
+    final element_ = selector is String ? querySelector(selector, element: element) : element;
+    return element_?.attributes[attribute]?.trim();
+  }
 
-  ScrapingUtil? querySelector(String selector) {
-    final result = element.querySelector(selector);
+  static String getText({String? selector, required Element element}) {
+    final element_ = selector is String ? querySelector(selector, element: element) : element;
+    return element_?.text.trim() ?? '';
+  }
 
-    if (result is Element) return ScrapingUtil(result);
+  static String? getURL({String? selector, required Element element}) {
+    return getAttribute(attribute: 'href', element: element, selector: selector);
+  }
+
+  static String? getImageSource({String? selector, bool? noSrcSet, required Element element}) {
+    final element_ = selector is String ? querySelector(selector, element: element) : element;
+
+    if (element_ is! Element) return null;
+
+    String? source;
+
+    source ??= getAttribute(attribute: 'data-lazy-srcset', element: element_);
+    source ??= getAttribute(attribute: 'data-srcset', element: element_);
+    source ??= getAttribute(attribute: 'srcset', element: element_);
+
+    if (source is String && !source.contains('no-cover.png')) return _bySrcSet(source.trim());
+
+    source ??= getAttribute(attribute: 'data-src', element: element_);
+    source ??= getAttribute(attribute: 'src', element: element_);
+
+    if (source is String && !source.contains('no-cover.png')) return source.trim();
     return null;
   }
 
-  String getByAttribute({required String attribute, String? selector}) {
-    if (selector is String) return (element.querySelector(selector)?.attributes[attribute] ?? '').trim();
-    return (element.attributes[attribute] ?? '').trim();
+  static String _bySrcSet(String src) {
+    final sources = '$src,'.replaceAll(RegExp(r'([1-9])\w+,'), '').trim().split(' ');
+    return sources.where((value) => value.length > 3).first.trim();
   }
 
-  String getByText({String? selector}) {
-    if (selector is String) return (element.querySelector(selector)?.text ?? '').trim();
-    return element.text.trim();
-  }
+  static List<Book> genericLastAdd({required Document document, required Scan scan}) {
+    final items = <Book>[];
 
-  String getURL({String? selector}) {
-    return getByAttribute(attribute: 'href', selector: selector);
-  }
+    for (final element in document.querySelectorAll('#loop-content .row div.page-item-detail')) {
+      final name = getText(element: element, selector: 'h3 a');
+      final type = typeByScan(element: element, scan: scan);
 
-  String? getSrc({String? selector, bool? bySrcSet}) {
-    final $ = selector is String ? element.querySelector(selector) : element;
+      final path = getURL(element: element, selector: 'h3 a') ?? '';
+      final source = getImageSource(element: element, selector: 'img') ?? '';
 
-    if ($ == null) return '';
+      if (name.isEmpty || path.isEmpty || source.isEmpty) continue;
 
-    if (bySrcSet == true) {
-      final attribute = $.attributes['data-lazy-srcset'] ?? $.attributes['data-srcset'] ?? $.attributes['srcset'];
-
-      if (attribute == null || attribute.contains('no-cover.png')) return null;
-      return _bySrcSet(attribute).trim();
+      items.add(Book(name: name, path: path, src: source, type: type, scan: scan));
     }
 
-    final attribute = $.attributes['data-src'] ?? $.attributes['src'];
-
-    if (attribute == null || attribute.contains('no-cover.png')) return null;
-    return attribute.trim();
+    return items;
   }
 
-  static bool hasEmptyOrNull(List<String?> values) {
-    for (String? value in values) {
-      if (value == null || value.isEmpty) return true;
+  static List<Book> genericSearch({required Document document, required Scan scan}) {
+    final items = <Book>[];
+
+    for (final element in document.querySelectorAll('.c-tabs-item div.row')) {
+      final name = getText(element: element, selector: 'h3 a');
+      final type = typeByScan(element: element, scan: scan);
+
+      final path = getURL(element: element, selector: 'h3 a') ?? '';
+      final source = getImageSource(element: element, selector: 'img') ?? '';
+
+      if (name.isEmpty || path.isEmpty || source.isEmpty) continue;
+
+      items.add(Book(name: name, path: path, src: source, type: type, scan: scan));
     }
 
-    return false;
+    return items;
   }
 
-  String _bySrcSet(String src) {
-    final srcs = '$src,'.replaceAll(RegExp(r'([1-9])\w+,'), '').trim().split(' ');
-    return srcs.where((value) => value.length > 3).last.trim();
+  static BookData genericData({required Document document, required Book book, Document? chapterDocument}) {
+    final element = document.body;
+
+    if (element is! Element) throw Exception('Invalid document body');
+
+    final sinopse = getSinopse(element: element);
+    final categories = getCategories(element: element);
+    final type = book.type ?? getTypeByTable(element);
+
+    final chapters = <Chapter>[];
+    final chapterDoc = chapterDocument is Document ? chapterDocument : document;
+
+    for (final element in chapterDoc.querySelectorAll('.main li.wp-manga-chapter > a')) {
+      final url = getURL(element: element) ?? '';
+      final name = getText(element: element);
+
+      if (url.isEmpty && name.isNotEmpty) continue;
+
+      chapters.add(Chapter(
+        id: Chapter.idByName(name),
+        url: url,
+        name: name,
+        bookSlug: book.slug,
+        webId: book.webID,
+      ));
+    }
+
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return BookData(sinopse: sinopse, categories: categories, book: book, chapters: chapters, type: type);
   }
-}
 
-class ScanScrapingUtil {
-  const ScanScrapingUtil(this.$);
-
-  final Document $;
-
-  List<String> categories({String? selector}) {
-    final categories = <String>[];
-
-    $.querySelectorAll(selector ?? '.genres-content a').forEach((element) {
-      final category = element.text.trim();
-      if (category.isNotEmpty) categories.add(category);
-    });
-
-    return categories;
+  static String getSinopse({required Element element, String? selector}) {
+    return element.querySelector(selector ?? '.manga-excerpt')?.text.trim() ?? '';
   }
 
-  String? type({
-    String? itemsSelector,
-    String? keySelector,
-    String? valueSelector,
-    String? alternativeType,
-    String? Function(String? type)? transform,
-  }) {
-    String? type;
+  static List<String> getCategories({required Element element, String? selector}) {
+    final items = element.querySelectorAll(selector ?? '.genres-content a').map((e) => e.text.trim());
+    return items.where((item) => item.isNotEmpty).toList();
+  }
 
-    $.querySelectorAll(itemsSelector ?? '.post-content_item').forEach((element) {
-      final scraping = ScrapingUtil(element);
-      final key = scraping.getByText(selector: keySelector ?? 'h5').toLowerCase();
+  static String? getTypeByTable(Element element, {String? selector, String? keySelector, String? valueSelector}) {
+    for (final item in element.querySelectorAll(selector ?? '.post-content_item')) {
+      final key = getText(element: item, selector: keySelector ?? 'h5').toLowerCase();
 
       if (key.contains('tipo') || key.contains('type')) {
-        type = scraping.getByText(selector: valueSelector ?? '.summary-content');
-        if (transform != null) type = transform(type);
-      }
-    });
+        final type = getText(element: item, selector: valueSelector ?? '.summary-content');
 
-    return (type ?? '').isEmpty ? alternativeType : type;
+        if (type.isNotEmpty) return type;
+      }
+    }
+
+    return null;
   }
 
-  String sinopse({String? selector}) {
-    return $.querySelector(selector ?? '.manga-excerpt')?.text.trim() ?? '';
+  static String? typeByScan({required Element element, required Scan scan}) {
+    if (scan == Scan.neox) return getText(element: element, selector: 'span');
+    if (scan == Scan.hunters) return getText(element: element, selector: 'span.manga-type');
+    if (scan == Scan.glorious) return getText(element: element, selector: 'span');
+
+    return null;
   }
 }

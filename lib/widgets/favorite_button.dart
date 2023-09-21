@@ -1,5 +1,5 @@
 import 'package:anr/models/book.dart';
-import 'package:anr/repositories/favorites_repository.dart';
+import 'package:anr/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -17,29 +17,30 @@ class _FavoriteButtonState extends State<FavoriteButton> {
   bool _isFavorite = false;
 
   Future<void> _onPressed() async {
-    final newFavoriteState = !_isFavorite;
-
     setState(() {
-      _isFavorite = newFavoriteState;
+      _isFavorite = !_isFavorite;
       _isLoading = true;
     });
 
-    FavoritesRepository.I
-        .setFavorite(book: widget.book, remove: !newFavoriteState)
-        .then((value) => setState(() => _isLoading = false))
-        .catchError((error) => _snackBarError(!newFavoriteState));
+    final success = await favoritesRepository.toggleFavorite(!_isFavorite, widget.book);
+    if (!success) _showSnackBarError();
+
+    setState(() {
+      _isLoading = false;
+      _isFavorite = success ? _isFavorite : !_isFavorite;
+    });
   }
 
   @override
   void initState() {
-    FavoritesRepository.I.isFavorite(widget.book.slug).then((value) {
+    super.initState();
+
+    favoritesRepository.isFavorite(widget.book.slug).then((value) {
       setState(() {
         _isLoading = false;
         _isFavorite = value;
       });
     });
-
-    super.initState();
   }
 
   @override
@@ -51,16 +52,14 @@ class _FavoriteButtonState extends State<FavoriteButton> {
     );
   }
 
-  void _snackBarError(bool favoriteState) {
-    setState(() {
-      _isFavorite = favoriteState;
-      _isLoading = false;
-    });
-
-    final t = AppLocalizations.of(context)!;
+  void _showSnackBarError() {
+    final i10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
 
     messenger.clearSnackBars();
-    messenger.showSnackBar(SnackBar(content: Text(t.toggleFavoriteError)));
+    messenger.showSnackBar(SnackBar(content: Text(i10n.toggleFavoriteError)));
+
+    messenger.clearSnackBars();
+    messenger.showSnackBar(SnackBar(content: Text(i10n.toggleFavoriteError)));
   }
 }

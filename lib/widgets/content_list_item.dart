@@ -2,7 +2,7 @@ import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/flutter_html.dart' as html;
 
 class ContentListItem extends StatefulWidget {
   const ContentListItem({super.key, required this.scan, required this.content, this.onFinishedLoading});
@@ -79,7 +79,7 @@ class _ContentListItemState extends State<ContentListItem> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               if (widget.content.onlyText) {
-                return Html(key: UniqueKey(), data: widget.content.items[index]);
+                return html.Html(key: UniqueKey(), data: widget.content.items[index]);
               }
 
               return CachedNetworkImage(

@@ -1,4 +1,3 @@
-import 'package:anr/main.dart';
 import 'package:anr/models/book.dart';
 import 'package:anr/models/scan.dart';
 import 'package:mobx/mobx.dart';
@@ -16,10 +15,16 @@ abstract class _HomeStore with Store {
   ObservableMap<Scan, List<Book>> lastAdded = ObservableMap();
 
   @action
-  Future<void> getLatestBooksAdded() async {
-    final data = await bookRepository.lastAdded;
-    lastAdded = ObservableMap()..addAll(data);
+  Future<void> loadItems({bool forceUpdate = false}) async {
+    final items = await Future.wait(Scan.values.map((scan) async {
+      try {
+        return await scan.repository.lastAdded(forceUpdate: forceUpdate);
+      } catch (e) {
+        return <Book>[];
+      }
+    }));
 
-    isLoading = false;
+    lastAdded = ObservableMap()..addAll(Map.fromIterables(Scan.values, items));
+    if (isLoading) isLoading = false;
   }
 }

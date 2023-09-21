@@ -81,9 +81,9 @@ class _SearchScreenState extends State<SearchScreen> {
             }
 
             return SliverGrid.builder(
-              gridDelegate: BookListElementSize.sliverGridDelegate,
+              gridDelegate: BookListItemSize.sliverGridDelegate,
               itemCount: _store.results.length,
-              itemBuilder: (context, index) => BookListElement(book: _store.results[index]),
+              itemBuilder: (context, index) => BookListItem(book: _store.results[index]),
             );
           }),
         )

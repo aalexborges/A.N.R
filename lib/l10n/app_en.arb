@@ -27,5 +27,6 @@
   "changeTheme": "Change theme",
   "darkTheme": "Dark",
   "lightTheme": "Light",
-  "systemTheme": "System"
+  "systemTheme": "System",
+  "unknown": "unknown"
 }

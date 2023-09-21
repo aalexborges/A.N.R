@@ -76,9 +76,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             }
 
             return GridView.builder(
-              gridDelegate: BookListElementSize.sliverGridDelegate,
+              gridDelegate: BookListItemSize.sliverGridDelegate,
               itemCount: _store.favorites.length,
-              itemBuilder: (context, index) => BookListElement(book: _store.favorites[index]),
+              itemBuilder: (context, index) => BookListItem(book: _store.favorites[index]),
             );
           }),
         ),

@@ -49,7 +49,7 @@ class ReadingHistoryRepository {
 
     if (lastAddedItems.exists) {
       final lastAdded = lastAddedItems.children.first;
-      final id = Chapter.firebaseIdToId(lastAdded.key!);
+      final id = Chapter.idByFirebaseId(lastAdded.key!);
 
       if (id > chapter.id) {
         await lastAdded.ref.update({

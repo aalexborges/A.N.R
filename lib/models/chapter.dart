@@ -7,11 +7,11 @@ class Chapter extends ChangeNotifier {
   final String url;
   final String name;
   final String bookSlug;
-  final String? webId;
+  final int? webId;
 
   double _readingProgress = 0;
 
-  String get chapter => formatIdToChapterString(id);
+  String get chapter => chapterNumberById(id);
 
   String get firebaseId {
     final stringId = id.toString().replaceAll('.', '_');
@@ -25,40 +25,24 @@ class Chapter extends ChangeNotifier {
     notifyListeners();
   }
 
-  static double firebaseIdToId(String firebaseId) {
-    return double.parse(firebaseId.replaceAll('_', '.'));
-  }
-
-  static String formatIdToChapterString(double id) {
+  static String chapterNumberById(double id) {
     return id.toStringAsFixed(2).contains('.00') ? id.toStringAsFixed(0) : id.toString();
   }
-}
 
-class ChapterBase {
-  const ChapterBase({required this.name, required this.url, required this.bookSlug, this.webId});
+  static double idByFirebaseId(String firebaseId) => double.parse(firebaseId.replaceAll('_', '.'));
 
-  final String url;
-  final String name;
-  final String bookSlug;
-
-  final String? webId;
-
-  Chapter toChapter() {
-    return Chapter(id: _id, url: url, name: name, bookSlug: bookSlug, webId: webId);
-  }
-
-  double get _id {
+  static double idByName(String name) {
     String value = name.toLowerCase().trim();
 
     value = value.replaceAll(RegExp(r'cap.'), '').trim();
     value = value.replaceAll(RegExp(r'[^0-9. ]'), '').trim();
 
-    final splitedValue = value.split(RegExp(r'[. ]'));
-    final beforeFloatPoint = int.parse(splitedValue.first);
+    final values = value.split(RegExp(r'[. ]'));
+    final beforeFloatPoint = int.parse(values.first);
 
-    if (splitedValue.length == 1) return double.parse(beforeFloatPoint.toString());
+    if (values.length == 1) return double.parse(beforeFloatPoint.toString());
 
-    final afterFloatPoint = int.tryParse(splitedValue[1]);
+    final afterFloatPoint = int.tryParse(values[1]);
 
     if (afterFloatPoint != null) return double.parse('$beforeFloatPoint.$afterFloatPoint');
     return double.parse(beforeFloatPoint.toString());

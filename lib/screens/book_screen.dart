@@ -1,4 +1,5 @@
 import 'package:anr/models/book.dart';
+import 'package:anr/models/scan.dart';
 import 'package:anr/stores/book_store.dart';
 import 'package:anr/widgets/book_image_background.dart';
 import 'package:anr/widgets/book_middle_actions.dart';
@@ -68,7 +69,10 @@ class _BookScreenState extends State<BookScreen> {
                   child: BookImageBackground(
                     book: widget.book,
                     child: Observer(builder: (context) {
-                      return BookSubtitleInfos(book: widget.book, data: _store.data);
+                      return BookSubtitleInfos(
+                        scan: widget.book.scan.value.toUpperCase(),
+                        type: _store.data?.type ?? widget.book.type,
+                      );
                     }),
                   ),
                 ),

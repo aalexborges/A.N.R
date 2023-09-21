@@ -1,29 +1,25 @@
 import 'dart:convert';
 
+import 'package:anr/models/book.dart';
 import 'package:anr/models/chapter.dart';
-import 'package:anr/models/scan.dart';
 
 class BookData {
-  const BookData({required this.chapters, required this.sinopse, required this.categories, this.type});
+  const BookData({
+    required this.book,
+    required this.sinopse,
+    required this.chapters,
+    required this.categories,
+    this.type,
+  });
 
+  final Book book;
   final String sinopse;
   final List<String> categories;
   final List<Chapter> chapters;
-
   final String? type;
 
-  List<String> subtitleInfos({required Scan scan, String? alternativeType}) {
-    final items = <String>[];
-
-    if (chapters.isNotEmpty) items.add('${chapters.length}/${chapters.first.chapter}');
-    if (type != null || alternativeType != null) items.add((type ?? alternativeType)!.trim().toUpperCase());
-    items.add(scan.value.toUpperCase());
-
-    return items;
-  }
-
   Map<String, dynamic> toMap() {
-    return {'chapters': chapters, 'sinopse': sinopse, 'categories': categories, 'type': type};
+    return {'book': book.toMap(), 'sinopse': sinopse, 'chapters': chapters, 'categories': categories, 'type': type};
   }
 
   String toJson() => json.encode(toMap());
@@ -32,8 +28,9 @@ class BookData {
     return BookData(
       type: map['type'],
       sinopse: map['sinopse'],
-      chapters: map['chapters'],
+      chapters: map['chapters'] is List<Chapter> ? map['chapters'].map((e) => e.toMap()).toList() : map['chapters'],
       categories: map['categories'],
+      book: map['book'] is Book ? map['book'] : Book.fromMap(map['book']),
     );
   }
 

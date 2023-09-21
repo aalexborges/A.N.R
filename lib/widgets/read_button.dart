@@ -41,7 +41,7 @@ class _ReadButtonState extends State<ReadButton> {
       final item = event.snapshot.value;
 
       if (item is Map) {
-        final id = Chapter.firebaseIdToId(item.keys.first);
+        final id = Chapter.idByFirebaseId(item.keys.first);
         final progress = double.parse(item.values.first['progress'].toString());
 
         if (progress > 95) return _next(id);
@@ -97,7 +97,7 @@ class _ReadButtonState extends State<ReadButton> {
       child: ElevatedButton.icon(
         onPressed: () => _onPressed(context),
         icon: const Icon(Icons.read_more_rounded),
-        label: Text(t.readChapter(Chapter.formatIdToChapterString(_continueBy))),
+        label: Text(t.readChapter(Chapter.chapterNumberById(_continueBy))),
       ),
     );
   }
