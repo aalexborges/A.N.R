@@ -1,3 +1,4 @@
+import 'package:anr/cache/http_cache_manager.dart';
 import 'package:anr/utils/color_schemes.dart';
 import 'package:anr/firebase_options.dart';
 import 'package:anr/models/http_cache.dart';
@@ -24,6 +25,8 @@ Future<void> main() async {
 
   final prefs = await SharedPreferences.getInstance();
   registerSingletons(prefs);
+
+  await HttpCacheManager().clean();
 
   runApp(const MyApp());
 }

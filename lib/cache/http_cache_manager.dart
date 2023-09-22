@@ -38,4 +38,11 @@ class HttpCacheManager {
     await manager.put(item.id, item);
     return item;
   }
+
+  Future<void> clean() async {
+    final manager = await box();
+    final items = manager.values.where((e) => DateTime.now().difference(e.createdAt).inMinutes > 10).map((e) => e.key);
+
+    await manager.deleteAll(items);
+  }
 }
