@@ -45,7 +45,7 @@ class Details {
       sinopse: data.sinopse,
       categories: data.categories,
       chapterLength: data.chapters.length,
-      lastChapter: data.chapters.isEmpty ? '0' : data.chapters.first.chapter,
+      lastChapter: data.chapters.isEmpty ? '0' : data.chapters.first.chapterNumber,
       type: data.type ?? book.type,
     );
   }

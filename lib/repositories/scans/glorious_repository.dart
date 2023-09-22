@@ -7,7 +7,7 @@ class GloriousRepository extends ScanBaseRepository {
   GloriousRepository._internal();
 
   final apiURL = Uri.parse('https://api.gloriousscan.com');
-  final baseURL = Uri.parse('https://gloriousscan.com');
+  final baseURL = Uri.parse('https://gloriousscan.online');
   final scan = Scan.glorious;
 
   @override
@@ -51,5 +51,49 @@ class GloriousRepository extends ScanBaseRepository {
     }
 
     return items;
+  }
+
+  @override
+  Future<BookData> data(Book book, {bool forceUpdate = false}) async {
+    final uri = baseURL.replace(path: book.path);
+    final response = await httpRepository.get(uri, forceUpdate: forceUpdate);
+    final document = parse(response.body);
+    final element = document.body;
+
+    if (element is! Element) throw Exception('Invalid element');
+
+    final type = book.type;
+    final sinopse = ScrapingUtil.getSinopse(element: element, selector: '.description-container');
+    final chapters = <Chapter>[];
+
+    for (final element in document.querySelectorAll('ul > a')) {
+      final url = ScrapingUtil.getURL(element: element) ?? '';
+      final name = ScrapingUtil.getText(element: element, selector: 'span');
+
+      if (url.isEmpty && name.isNotEmpty) continue;
+
+      chapters.add(Chapter(id: Chapter.idByName(name), name: name, url: url));
+    }
+
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return BookData(sinopse: sinopse, book: book, categories: [], chapters: chapters, type: type);
+  }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    final url = baseURL.replace(path: chapter.url);
+    final response = await httpRepository.get(url);
+    final document = parse(response.body);
+
+    final nextData = jsonDecode(document.querySelector('#__NEXT_DATA__')?.text ?? '');
+    final id = nextData['props']['pageProps']['data']['id'].toString();
+
+    final apiResponse = await httpRepository.get(apiURL.replace(path: '/series/chapter/$id'));
+    final data = jsonDecode(apiResponse.body);
+
+    final images = List<String>.from(data['content']['images']);
+    final key = widget.GlobalObjectKey('${chapter.id}-${DateTime.now().millisecondsSinceEpoch}');
+
+    return Content(key: key, title: chapter.name, images: images);
   }
 }

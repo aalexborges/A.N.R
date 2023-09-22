@@ -10,7 +10,7 @@
   "bookDetails": "Detalhes do Livro",
   "enterBookName": "Digite o nome do livro",
   "searchNotResult": "Ops! Não houve resultados para sua busca",
-  "bookdDataError": "Ops! Algo deu errado ao obter os dados do livro",
+  "bookDataError": "Ops! Algo deu errado ao obter os dados do livro",
   "toggleFavoriteError": "Ops! Algo deu errado ao adicionar/remover o livro dos seus favoritos",
   "continueReading": "Continuar leitura do capítulo {chapter}",
   "readChapter": "Ler capítulo {chapter}",

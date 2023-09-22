@@ -11,7 +11,7 @@ class DatabaseRepository {
   Future<void> init({bool restart = false}) async {
     if (_initialized && !restart) return;
 
-    _database = FirebaseDatabase.instance.ref('users/$_userUID');
+    _database = FirebaseDatabase.instance.ref('users/$userUID');
     await _database!.keepSynced(true);
 
     _initialized = true;
@@ -47,7 +47,7 @@ class DatabaseRepository {
     return _database!.child(node);
   }
 
-  String get _userUID {
+  String get userUID {
     final user = FirebaseAuth.instance.currentUser;
     final uid = user?.uid;
 

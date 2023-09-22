@@ -1,80 +1,45 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/chapter.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:anr/service_locator.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ReadingHistoryRepository {
-  const ReadingHistoryRepository._();
+  final _node = 'reading_history';
 
-  static DatabaseReference? _baseRef;
-  static const I = ReadingHistoryRepository._();
+  Future<double> progress(String slug, String firebaseId) async {
+    final event = await databaseRepository.once('$_node/$slug/$firebaseId/progress');
+    final snapshot = event.snapshot;
 
-  Future<DatabaseReference> get baseRef async {
-    if (_baseRef is DatabaseReference) return _baseRef!;
-
-    _baseRef = await _initBaseRef();
-    return _baseRef!;
+    if (snapshot.exists) return double.tryParse(snapshot.value.toString()) ?? 0;
+    return 0;
   }
 
-  Future<DatabaseReference> _initBaseRef() async {
-    final user = FirebaseAuth.instance.currentUser;
+  Future<void> update({required Book book, required Chapter chapter, required double progress}) async {
+    final child = await databaseRepository.child('$_node/${book.slug}');
 
-    if (user is User) {
-      final ref = FirebaseDatabase.instance.ref('users/${user.uid}/reading_history');
-      await ref.keepSynced(true);
-
-      return ref;
-    }
-
-    throw Error();
-  }
-
-  Future<double> update(Chapter chapter, double value) async {
-    if (chapter.readingProgress == value) return value;
-    if (value < 1) return value;
-    if (value < 0) throw Error();
-
-    final ref = await baseRef;
-    final progress = value >= 99 ? 100.0 : value;
-
-    final lastAddedItems = await ref.child(chapter.bookSlug).orderByChild('createdAt').limitToLast(1).get();
-    final child = ref.child(chapter.bookSlug).child(chapter.firebaseId);
-    final item = await child.get();
+    final lastReadItems = await child.orderByChild('createdAt').limitToLast(1).get();
+    final item = await databaseRepository.get('$_node/${book.slug}/${chapter.firebaseId}');
 
     if (item.exists) {
-      await child.update({'progress': progress, 'createdAt': (item.value as dynamic)['createdAt']});
+      await item.ref.update({'progress': progress});
     } else {
-      await child.set({'progress': progress, 'createdAt': DateTime.now().millisecondsSinceEpoch});
+      await item.ref.set({'progress': progress, 'createdAt': DateTime.now().millisecondsSinceEpoch});
     }
 
-    if (lastAddedItems.exists) {
-      final lastAdded = lastAddedItems.children.first;
-      final id = Chapter.idByFirebaseId(lastAdded.key!);
+    if (lastReadItems.exists) {
+      final lastRead = lastReadItems.children.first;
+      final id = Chapter.idByFirebaseId(lastRead.key!);
 
-      if (id > chapter.id) {
-        await lastAdded.ref.update({
-          'progress': (lastAdded.value as dynamic)['progress'],
-          'createdAt': DateTime.now().millisecondsSinceEpoch,
-        });
-      }
+      if (id > chapter.id) await lastRead.ref.update({'createdAt': DateTime.now().millisecondsSinceEpoch});
     }
-
-    chapter.setReadingProgress(value);
-
-    return progress;
   }
 
-  Future<double?> progress(Chapter chapter) async {
-    final ref = await baseRef;
-    final data = await ref.child(chapter.bookSlug).child(chapter.firebaseId).get();
-    final progress = data.exists ? double.parse((data.value as dynamic)['progress'].toString()) : null;
-
-    if (progress != null) chapter.setReadingProgress(progress);
-    return progress;
+  Future<Stream<DatabaseEvent>> continueReading(String slug) async {
+    final child = await databaseRepository.child('$_node/$slug');
+    return child.orderByChild('createdAt').limitToLast(1).onValue;
   }
 
-  Future<Stream<DatabaseEvent>> continueReading(Book book) async {
-    final ref = await baseRef;
-    return ref.child(book.slug).orderByChild('createdAt').limitToLast(1).onValue;
+  Stream<DatabaseEvent> chapterProgressStream(String slug, String firebaseId) {
+    return FirebaseDatabase.instance.ref('users/${databaseRepository.userUID}/$_node/$slug/$firebaseId').onValue;
   }
 }

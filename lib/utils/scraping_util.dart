@@ -1,7 +1,9 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/book_data.dart';
 import 'package:anr/models/chapter.dart';
+import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
+import 'package:flutter/material.dart' as widget;
 import 'package:html/dom.dart';
 
 class ScrapingUtil {
@@ -89,7 +91,7 @@ class ScrapingUtil {
 
     if (element is! Element) throw Exception('Invalid document body');
 
-    final sinopse = getSinopse(element: element);
+    final sinopse = getSinopse(element: element, scan: book.scan);
     final categories = getCategories(element: element);
     final type = book.type ?? getTypeByTable(element);
 
@@ -106,7 +108,6 @@ class ScrapingUtil {
         id: Chapter.idByName(name),
         url: url,
         name: name,
-        bookSlug: book.slug,
         webId: book.webID,
       ));
     }
@@ -115,7 +116,25 @@ class ScrapingUtil {
     return BookData(sinopse: sinopse, categories: categories, book: book, chapters: chapters, type: type);
   }
 
-  static String getSinopse({required Element element, String? selector}) {
+  static Future<Content> genericContent({required Document document, required String title, required double id}) async {
+    final novelContent = document.querySelector('.reading-content .text-left');
+    final key = widget.GlobalObjectKey('$id-${DateTime.now().millisecondsSinceEpoch}');
+
+    if (novelContent is Element) return Content(key: key, title: title, text: novelContent.innerHtml.trim());
+
+    final sources = <String>[];
+
+    for (final element in document.querySelectorAll('.reading-content img.wp-manga-chapter-img')) {
+      final source = getImageSource(element: element) ?? '';
+      if (source.isNotEmpty) sources.add(source);
+    }
+
+    return Content(key: key, title: title, images: sources);
+  }
+
+  static String getSinopse({required Element element, Scan? scan, String? selector}) {
+    if (scan == Scan.hunters) return element.querySelector(selector ?? '.summary__content p')?.text.trim() ?? '';
+
     return element.querySelector(selector ?? '.manga-excerpt')?.text.trim() ?? '';
   }
 

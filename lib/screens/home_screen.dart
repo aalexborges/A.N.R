@@ -19,13 +19,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
-  late HomeStore _store;
+  final _store = HomeStore();
 
   @override
   void initState() {
     super.initState();
-
-    _store = HomeStore()..loadItems();
+    _store.loadItems();
   }
 
   @override

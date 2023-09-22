@@ -15,12 +15,12 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  late FavoritesStore _store;
+  final _store = FavoritesStore();
 
   @override
   void initState() {
-    _store = FavoritesStore()..get().catchError(_snackBarError);
     super.initState();
+    _store.get().catchError(_snackBarError);
   }
 
   @override

@@ -1,14 +1,19 @@
 import 'package:anr/models/book.dart';
+import 'package:anr/models/book_data.dart';
+import 'package:anr/models/content.dart';
+import 'package:anr/models/order.dart';
 import 'package:anr/models/scan.dart';
+import 'package:anr/router.dart';
 import 'package:anr/stores/book_store.dart';
 import 'package:anr/widgets/book_image_background.dart';
 import 'package:anr/widgets/book_middle_actions.dart';
 import 'package:anr/widgets/book_subtitle_infos.dart';
-import 'package:anr/widgets/chapter_list_item.dart';
 import 'package:anr/widgets/favorite_button.dart';
+import 'package:anr/widgets/reading_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:go_router/go_router.dart';
 
 class BookScreen extends StatefulWidget {
   const BookScreen({super.key, required this.book});
@@ -20,10 +25,10 @@ class BookScreen extends StatefulWidget {
 }
 
 class _BookScreenState extends State<BookScreen> {
-  late BookStore _store;
-  double? _pinnedHeight;
-
+  final _store = BookStore();
   final _scrollController = ScrollController();
+
+  double? _pinnedHeight;
 
   void _scrollListener() {
     _pinnedHeight ??= (65 * MediaQuery.of(context).size.height) / 100;
@@ -34,15 +39,17 @@ class _BookScreenState extends State<BookScreen> {
 
   @override
   void initState() {
-    _store = BookStore()..getData(widget.book).catchError((_) => _snackBarError());
-    _scrollController.addListener(_scrollListener);
-
     super.initState();
+
+    _store.getData(widget.book).catchError((_) => _snackBarError());
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -72,6 +79,8 @@ class _BookScreenState extends State<BookScreen> {
                       return BookSubtitleInfos(
                         scan: widget.book.scan.value.toUpperCase(),
                         type: _store.data?.type ?? widget.book.type,
+                        lastChapter: _store.chapters.isEmpty ? null : _store.data?.chapters.first.chapterNumber,
+                        totalChapters: _store.chapters.isEmpty ? null : _store.data?.chapters.length.toString(),
                       );
                     }),
                   ),
@@ -85,7 +94,7 @@ class _BookScreenState extends State<BookScreen> {
                     return BookMiddleActions(
                       book: widget.book,
                       data: _store.data,
-                      onPressChangeOrder: _store.data == null ? null : _store.toggleOrder,
+                      onPressChangeOrder: _store.data is! BookData ? null : _store.toggleOrder,
                     );
                   },
                 ),
@@ -98,16 +107,19 @@ class _BookScreenState extends State<BookScreen> {
                     final chapter = _store.chapters[index];
                     final id = chapter.id.toString();
 
-                    return ChapterListItem(
+                    return ListTile(
                       key: Key(id),
-                      chapter: chapter,
-                      onTap: () => ChapterListItem.toDetails(
-                        book: widget.book,
-                        context: context,
-                        chapters: _store.data!.chapters,
-                        startAt: index,
-                        order: _store.order,
-                      ),
+                      title: Text(chapter.name),
+                      trailing: ReadingHistory(slug: widget.book.slug, firebaseId: chapter.firebaseId),
+                      onTap: () {
+                        context.push(
+                          ScreenPaths.content,
+                          extra: ContentParams(
+                            bookData: _store.data!,
+                            chapterIndex: Order.realIndexBy(_store.order, index, _store.data!.chapters.length),
+                          ),
+                        );
+                      },
                     );
                   },
                   childCount: _store.chapters.length,
@@ -126,7 +138,7 @@ class _BookScreenState extends State<BookScreen> {
       final messenger = ScaffoldMessenger.of(context);
 
       messenger.clearSnackBars();
-      messenger.showSnackBar(SnackBar(content: Text(t.bookdDataError)));
+      messenger.showSnackBar(SnackBar(content: Text(t.bookDataError)));
     }
   }
 }

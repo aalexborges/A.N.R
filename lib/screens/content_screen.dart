@@ -4,8 +4,9 @@ import 'dart:ui';
 import 'package:anr/models/chapter.dart';
 import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
-import 'package:anr/repositories/reading_history_repository.dart';
-import 'package:anr/widgets/content_list_item.dart';
+import 'package:anr/service_locator.dart';
+import 'package:anr/widgets/content_item.dart';
+import 'package:anr/widgets/content_item_with_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -19,137 +20,46 @@ class ContentScreen extends StatefulWidget {
 }
 
 class _ContentScreenState extends State<ContentScreen> {
-  bool _isLoading = true;
-  bool _processing = false;
-  bool _lastChapter = false;
-
-  Chapter? _currentChapter;
-  Content? _currentContent;
-  int? _currentChapterIndex;
-
-  Chapter? _nextChapter;
-  Content? _nextContent;
-  int? _nextChapterIndex;
-
-  double _readingProgress = 0;
-
-  final _contents = List<Content>.empty(growable: true);
   final _controller = ScrollController();
+  final _items = List<Content>.empty(growable: true);
 
-  bool get _isProcessing => _isLoading || _processing;
-  bool get _hasContent => _currentChapter != null && _currentContent != null && _currentChapterIndex != null;
-  bool get _hasNextContent => _nextChapter != null && _nextContent != null && _nextChapterIndex != null;
+  bool _loading = true;
+  bool _lastChapter = false;
+  bool _nextChapterLoaded = false;
+  bool _gettingNextChapter = false;
+  int _currentlyChapterIndex = -1;
+  int _currentlyContentIndex = -1;
+  double _progress = 0;
 
-  Future<void> _init() async {
-    if (_hasContent) return;
-
-    _currentChapterIndex = widget.params.startAt;
-    _currentChapter = widget.params.chapters[_currentChapterIndex!];
-    _currentContent = await widget.params.scan.repository.content(_currentChapter!);
-
-    _readingProgress = _currentChapter!.readingProgress;
-    _lastChapter = _currentChapterIndex == 0;
-
-    setState(() {
-      _contents.add(_currentContent!);
-    });
-  }
-
-  Future<void> _getNext() async {
-    if (_hasNextContent) return;
-
-    _nextChapterIndex = _currentChapterIndex! - 1;
-    _nextChapter = widget.params.chapters[_nextChapterIndex!];
-
-    try {
-      _nextContent = await widget.params.scan.repository.content(_nextChapter!);
-    } catch (e) {
-      _snackBarError(e);
-      rethrow;
-    }
-
-    if (!_contents.contains(_nextContent)) {
-      setState(() {
-        _contents.add(_nextContent!);
-      });
-    }
-  }
-
-  Future<void> _next() async {
-    if (!_hasNextContent) return;
-
-    final chapter = widget.params.chapters[_currentChapterIndex!];
-    final readingProgress = _readingProgress;
-
-    _currentChapter = _nextChapter;
-    _currentContent = _nextContent;
-    _currentChapterIndex = _nextChapterIndex;
-
-    _nextChapter = null;
-    _nextContent = null;
-    _nextChapterIndex = null;
-
-    _readingProgress = 0;
-    _lastChapter = _currentChapterIndex == 0;
-
-    await ReadingHistoryRepository.I.update(chapter, readingProgress);
-  }
-
-  void _onFinishedLoading() {
-    if (!_isLoading) return;
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        _isLoading = false;
-      });
-
-      if (_currentChapter is Chapter) {
-        _controller.jumpTo((_controller.position.maxScrollExtent * _currentChapter!.readingProgress) / 100);
-      }
-    });
-  }
-
-  Future<void> _scrollListener() async {
-    if (_isProcessing) return;
-    _processing = true;
-    _readingProgress = _currentContent?.readingProgress ?? _readingProgress;
-
-    if (_lastChapter) {
-      _processing = false;
-      return;
-    }
-
-    if (_readingProgress >= 100) {
-      await _next();
-
-      _processing = false;
-      return;
-    }
-
-    final nextChapterTrigger = 0.72 * _controller.position.maxScrollExtent;
-    if (_controller.position.pixels > nextChapterTrigger) await _getNext();
-
-    _processing = false;
-  }
+  Scan get scan => widget.params.scan;
+  List<Chapter> get chapters => widget.params.chapters;
+  Chapter get currentChapter => chapters[_currentlyChapterIndex];
+  Content get currentContent => _items[_currentlyContentIndex];
 
   @override
   void initState() {
-    _init().catchError(_snackBarError);
-    _controller.addListener(_scrollListener);
-
     super.initState();
+
+    _controller.addListener(_controllerListener);
+    _loadInitialChapter();
   }
 
   @override
-  void dispose() {
-    if (_hasContent) {
-      ReadingHistoryRepository.I.update(_currentChapter!, _readingProgress);
-    }
-
-    _controller.removeListener(_scrollListener);
+  Future<void> dispose() async {
+    _controller.removeListener(_controllerListener);
     _controller.dispose();
 
     super.dispose();
+
+    if (_currentlyChapterIndex >= 0 && _currentlyContentIndex >= 0 && _progress > 0) {
+      try {
+        await readingHistoryRepository.update(
+          book: widget.params.book,
+          chapter: currentChapter,
+          progress: _progress,
+        );
+      } catch (_) {}
+    }
   }
 
   @override
@@ -161,35 +71,40 @@ class _ContentScreenState extends State<ContentScreen> {
           Positioned.fill(
             child: InteractiveViewer(
               child: ListView.builder(
-                physics: _isLoading ? const NeverScrollableScrollPhysics() : null,
-                cacheExtent: MediaQuery.of(context).size.height + 99901,
+                physics: _loading ? const NeverScrollableScrollPhysics() : null,
+                cacheExtent: MediaQuery.of(context).size.height + 99911,
                 controller: _controller,
-                itemCount: _contents.length,
-                restorationId: 'test',
+                itemCount: _items.length,
                 itemBuilder: (context, index) {
-                  return ContentListItem(
-                    key: Key(_contents[index].chapter.chapter),
-                    scan: widget.params.scan,
-                    content: _contents[index],
-                    onFinishedLoading: index == 0 ? _onFinishedLoading : null,
+                  final content = _items[index];
+
+                  if (index == 0) {
+                    return ContentItemWithLoading(
+                      key: content.key,
+                      content: content,
+                      headers: scan.repository.headers,
+                      onLoaded: _onLoaded,
+                    );
+                  }
+
+                  return ContentItem(
+                    key: content.key,
+                    content: content,
+                    headers: scan.repository.headers,
                   );
                 },
               ),
             ),
           ),
           Positioned.fill(child: _loadingBlur()),
-          Positioned.fill(
-            child: Center(
-              child: _isLoading ? const CircularProgressIndicator.adaptive() : null,
-            ),
-          ),
+          Positioned.fill(child: Center(child: _loading ? const CircularProgressIndicator.adaptive() : null)),
         ],
       ),
     );
   }
 
   Widget _loadingBlur() {
-    if (!_isLoading) return const SizedBox();
+    if (!_loading) return const SizedBox();
 
     return Center(
       child: BackdropFilter(
@@ -199,11 +114,89 @@ class _ContentScreenState extends State<ContentScreen> {
     );
   }
 
-  FutureOr<void> _snackBarError(dynamic e) {
-    final t = AppLocalizations.of(context)!;
+  Future<void> _onLoaded() async {
+    if (_loading) await Future.delayed(const Duration(milliseconds: 250), _continueByProgress);
+  }
+
+  Future<Content> _loadChapterContent(int index) async {
+    return scan.repository.content(widget.params.chapters[index]);
+  }
+
+  Future<void> _loadInitialChapter() async {
+    try {
+      final content = await _loadChapterContent(widget.params.chapterIndex);
+
+      setState(() {
+        _items.add(content);
+        _loading = content.isImage ? true : false;
+        _currentlyContentIndex = 0;
+        _currentlyChapterIndex = widget.params.chapterIndex;
+        _lastChapter = widget.params.chapterIndex == 0;
+      });
+
+      if (!content.isImage) await Future.delayed(const Duration(milliseconds: 250), _continueByProgress);
+    } catch (e) {
+      _snackBarError();
+    }
+  }
+
+  Future<void> _loadNextChapter() async {
+    try {
+      _gettingNextChapter = true;
+
+      final nextChapterIndex = _currentlyChapterIndex - 1;
+      final content = await _loadChapterContent(nextChapterIndex);
+
+      setState(() {
+        _items.add(content);
+        _nextChapterLoaded = true;
+        _gettingNextChapter = false;
+        _lastChapter = nextChapterIndex == 0;
+      });
+    } catch (e) {
+      _snackBarError();
+    }
+  }
+
+  Future<void> _nextChapter() async {
+    final oldChapter = currentChapter;
+
+    _nextChapterLoaded = false;
+    _currentlyChapterIndex = _currentlyChapterIndex - 1;
+    _currentlyContentIndex = _currentlyContentIndex + 1;
+    _progress = 0;
+
+    await readingHistoryRepository.update(book: widget.params.book, chapter: oldChapter, progress: 100);
+  }
+
+  Future<void> _continueByProgress() async {
+    if (!_loading) return;
+
+    setState(() {
+      _loading = false;
+    });
+
+    final chapter = chapters[widget.params.chapterIndex];
+    final progress = await readingHistoryRepository.progress(widget.params.book.slug, chapter.firebaseId);
+
+    if (progress > 0) _controller.jumpTo((_controller.position.maxScrollExtent * progress) / 100);
+  }
+
+  Future<void> _controllerListener() async {
+    _progress = currentContent.readingProgress;
+
+    if (_nextChapterLoaded && _progress >= 100) return await _nextChapter();
+    if (_lastChapter || _gettingNextChapter || _nextChapterLoaded) return;
+
+    final nextChapterTrigger = 0.72 * _controller.position.maxScrollExtent;
+    if (_controller.position.pixels > nextChapterTrigger) await _loadNextChapter();
+  }
+
+  void _snackBarError() {
+    final i10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
 
     messenger.clearSnackBars();
-    messenger.showSnackBar(SnackBar(content: Text(t.bookContentError)));
+    messenger.showSnackBar(SnackBar(content: Text(i10n.bookContentError)));
   }
 }

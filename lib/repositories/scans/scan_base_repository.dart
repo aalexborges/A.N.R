@@ -8,6 +8,7 @@ import 'package:anr/models/scan.dart';
 import 'package:anr/service_locator.dart';
 import 'package:anr/utils/scraping_util.dart';
 import 'package:flutter/material.dart' as widget;
+import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 part 'package:anr/repositories/scans/glorious_repository.dart';
@@ -17,7 +18,6 @@ part 'package:anr/repositories/scans/manga_livre_repository.dart';
 part 'package:anr/repositories/scans/neox_repository.dart';
 part 'package:anr/repositories/scans/prisma_repository.dart';
 part 'package:anr/repositories/scans/random_repository.dart';
-part 'package:anr/repositories/scans/reaper_repository.dart';
 
 abstract class ScanBaseRepository {
   final Map<String, String>? headers = null;
@@ -30,7 +30,6 @@ abstract class ScanBaseRepository {
   }
 
   Future<Content> content(Chapter chapter) async {
-    final key = widget.GlobalObjectKey(DateTime.now().toString());
-    return Content(key: key, chapter: chapter, items: []);
+    return Content(key: widget.GlobalObjectKey(DateTime.now().toString()), title: '');
   }
 }

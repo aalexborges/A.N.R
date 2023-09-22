@@ -4,7 +4,6 @@ enum Scan {
   neox,
   random,
   prisma,
-  reaper,
   glorious,
   mangaHost,
   mangaLivre,
@@ -18,7 +17,7 @@ enum Scan {
     return Scan.oldScans.where((element) => element == value.toLowerCase()).isNotEmpty;
   }
 
-  static const oldScans = ['muito manga'];
+  static const oldScans = ['reaper', 'muito manga'];
 
   static ScanBaseRepository repositoryBy(Scan scan) {
     switch (scan) {
@@ -28,8 +27,6 @@ enum Scan {
         return RandomRepository.instance;
       case Scan.prisma:
         return PrismaRepository.instance;
-      case Scan.reaper:
-        return ReaperRepository.instance;
       case Scan.glorious:
         return GloriousRepository.instance;
       case Scan.mangaHost:
@@ -51,8 +48,6 @@ extension ScansExtension on Scan {
         return 'random';
       case Scan.prisma:
         return 'prisma';
-      case Scan.reaper:
-        return 'reaper';
       case Scan.glorious:
         return 'glorious';
       case Scan.mangaHost:

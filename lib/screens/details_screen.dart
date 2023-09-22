@@ -10,7 +10,7 @@ class DetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context)!;
+    final i10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(title: Text(details.name)),
@@ -30,7 +30,7 @@ class DetailsScreen extends StatelessWidget {
               title: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 margin: const EdgeInsets.only(bottom: 4),
-                child: Text(t.dCategories),
+                child: Text(i10n.dCategories),
               ),
               subtitle: SizedBox(
                 height: 40,
@@ -49,23 +49,23 @@ class DetailsScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(t.dName),
+              title: Text(i10n.dName),
               subtitle: Text(details.name),
             ),
             ListTile(
-              title: Text(t.dType),
-              subtitle: Text((details.type ?? 'Desconhecido').toUpperCase()),
+              title: Text(i10n.dType),
+              subtitle: Text((details.type ?? i10n.unknown).toUpperCase()),
             ),
             ListTile(
-              title: Text(t.dAmountOfChapters),
+              title: Text(i10n.dAmountOfChapters),
               subtitle: Text(details.chapterLength.toString()),
             ),
             ListTile(
-              title: Text(t.dLastChapterReleased),
+              title: Text(i10n.dLastChapterReleased),
               subtitle: Text(details.lastChapter),
             ),
             ListTile(
-              title: Text(t.dScan),
+              title: Text(i10n.dScan),
               subtitle: Text(details.scan.value.toUpperCase()),
             ),
           ],

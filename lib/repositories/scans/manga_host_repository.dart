@@ -61,6 +61,71 @@ class MangaHostRepository extends ScanBaseRepository {
   }
 
   @override
+  Future<BookData> data(Book book, {bool forceUpdate = false}) async {
+    final response = await httpRepository.tryGetRequestWithBaseURLs(
+      uri: Uri.parse(book.path),
+      headers: headers,
+      baseURLs: baseURLs,
+      forceUpdate: forceUpdate,
+    );
+
+    final document = parse(response.body);
+    final element = document.body;
+
+    if (element is! Element) throw Exception('Invalid document body');
+
+    final categories = ScrapingUtil.getCategories(element: element, selector: 'div.tags a.tag');
+    final sinopse = ScrapingUtil.getSinopse(element: element, selector: 'div.text .paragraph');
+    final type = ScrapingUtil.getTypeByTable(
+      element,
+      selector: 'div.text ul li',
+      keySelector: 'strong',
+      valueSelector: 'div',
+    );
+
+    final chapters = <Chapter>[];
+
+    for (final element in element.querySelectorAll('section div.chapters div.cap')) {
+      final url = ScrapingUtil.getURL(element: element, selector: '.tags a') ?? '';
+      String name = ScrapingUtil.getText(element: element, selector: 'a[rel]');
+
+      if (url.isEmpty && name.isNotEmpty) continue;
+
+      name = double.tryParse(name) != null ? 'Cap. ${name.padLeft(2, '0')}' : name;
+
+      chapters.add(Chapter(
+        id: Chapter.idByName(name),
+        url: url,
+        name: name,
+        webId: book.webID,
+      ));
+    }
+
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return BookData(sinopse: sinopse, categories: categories, book: book, chapters: chapters, type: type);
+  }
+
+  @override
+  Future<Content> content(Chapter chapter) async {
+    final response = await httpRepository.tryGetRequestWithBaseURLs(
+      uri: Uri.parse(chapter.url),
+      headers: headers,
+      baseURLs: baseURLs,
+    );
+
+    final document = parse(response.body);
+    final images = <String>[];
+    final key = widget.GlobalObjectKey('${chapter.id}-${DateTime.now().millisecondsSinceEpoch}');
+
+    for (final element in document.querySelectorAll('#slider a img')) {
+      final src = ScrapingUtil.getImageSource(element: element) ?? '';
+      if (src.isNotEmpty) images.add(src);
+    }
+
+    return Content(key: key, title: chapter.name, images: images);
+  }
+
+  @override
   Map<String, String>? get headers {
     return {
       'Origin': baseURLs[0],

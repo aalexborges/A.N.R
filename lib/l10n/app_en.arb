@@ -10,7 +10,7 @@
   "bookDetails": "Book details",
   "enterBookName": "Enter book name",
   "searchNotResult": "Oops! There were no results for your search",
-  "bookdDataError": "Oops! Something went wrong getting book data",
+  "bookDataError": "Oops! Something went wrong getting book data",
   "toggleFavoriteError": "Something went wrong adding/removing the book from your favorites",
   "continueReading": "Continue reading from chapter {chapter}",
   "readChapter": "Read chapter {chapter}",
