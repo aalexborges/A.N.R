@@ -1,48 +1,40 @@
+import 'package:anr/models/book.dart';
+import 'package:anr/models/book_data.dart';
 import 'package:anr/models/chapter.dart';
-import 'package:anr/models/order.dart';
 import 'package:anr/models/scan.dart';
 import 'package:flutter/material.dart';
 
 class ContentParams {
-  const ContentParams({required this.scan, required this.chapters, required this.startAt});
+  const ContentParams({required this.bookData, required this.chapterIndex});
 
-  final Scan scan;
-  final List<Chapter> chapters;
-  final int startAt;
+  final BookData bookData;
+  final int chapterIndex;
 
-  static int startByOrder(int startAt, Order order, int chaptersLength) {
-    return order == Order.asc ? chaptersLength - (startAt + 1) : startAt;
-  }
+  Scan get scan => book.scan;
+  Book get book => bookData.book;
+  List<Chapter> get chapters => bookData.chapters;
 }
 
 class Content {
-  Content({
-    required this.key,
-    required this.chapter,
-    required this.items,
-    this.onlyText = false,
-    this.height,
-  });
+  const Content({required this.key, required this.title, this.text, this.images});
 
-  final bool onlyText;
-  final Chapter chapter;
-  final List<String> items;
+  final String title;
+  final String? text;
+  final List<String>? images;
   final GlobalObjectKey key;
-  double? height;
+
+  bool get isImage => images is List && text is! String;
+  bool get hasContent => (text is String && text!.isNotEmpty) || (images is List && images!.isNotEmpty);
 
   double get readingProgress {
     final renderBox = key.currentContext?.findRenderObject() as RenderBox?;
     final size = renderBox?.size;
     final offset = renderBox?.localToGlobal(Offset.zero);
 
-    if (size == null || offset == null) return 0;
+    if (size is! Size || offset is! Offset) return 0;
     if (offset.dy > 0) return 0;
 
     final readingProgress = ((offset.dy / size.height) * 100).abs();
     return readingProgress >= 99 ? 100 : readingProgress;
-  }
-
-  void setHeight(double value) {
-    height = value;
   }
 }

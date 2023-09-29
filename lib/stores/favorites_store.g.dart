@@ -61,8 +61,8 @@ mixin _$FavoritesStore on _FavoritesStore, Store {
       AsyncAction('_FavoritesStore.get', context: context);
 
   @override
-  Future<void> get() {
-    return _$getAsyncAction.run(() => super.get());
+  Future<void> get({bool forceUpdate = false}) {
+    return _$getAsyncAction.run(() => super.get(forceUpdate: forceUpdate));
   }
 
   late final _$changeFilterAsyncAction =

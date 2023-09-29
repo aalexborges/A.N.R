@@ -15,12 +15,12 @@ class FavoritesScreen extends StatefulWidget {
 }
 
 class _FavoritesScreenState extends State<FavoritesScreen> {
-  late FavoritesStore _store;
+  final _store = FavoritesStore();
 
   @override
   void initState() {
-    _store = FavoritesStore()..get().catchError(_snackBarError);
     super.initState();
+    _store.get().catchError(_snackBarError);
   }
 
   @override
@@ -76,9 +76,9 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             }
 
             return GridView.builder(
-              gridDelegate: BookListElementSize.sliverGridDelegate,
+              gridDelegate: BookListItemSize.sliverGridDelegate,
               itemCount: _store.favorites.length,
-              itemBuilder: (context, index) => BookListElement(book: _store.favorites[index]),
+              itemBuilder: (context, index) => BookListItem(book: _store.favorites[index]),
             );
           }),
         ),

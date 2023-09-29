@@ -60,8 +60,9 @@ mixin _$SearchStore on _SearchStore, Store {
       AsyncAction('_SearchStore.onSearch', context: context);
 
   @override
-  Future<void> onSearch(String value) {
-    return _$onSearchAsyncAction.run(() => super.onSearch(value));
+  Future<void> onSearch(String value, {bool forceUpdate = false}) {
+    return _$onSearchAsyncAction
+        .run(() => super.onSearch(value, forceUpdate: forceUpdate));
   }
 
   late final _$_SearchStoreActionController =

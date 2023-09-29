@@ -1,143 +1,136 @@
-part of '../scan_base_repository.dart';
+part of 'package:anr/repositories/scans/scan_base_repository.dart';
 
 class MangaLivreRepository extends ScanBaseRepository {
-  const MangaLivreRepository();
+  static final MangaLivreRepository instance = MangaLivreRepository._internal();
+  factory MangaLivreRepository() => instance;
 
-  Scan get scan => Scan.mangaLivre;
+  MangaLivreRepository._internal();
+
+  final baseURL = Uri.parse('https://mangalivre.net');
+  final scan = Scan.mangaLivre;
 
   @override
-  List<String> get baseURLs => ['https://mangalivre.net'];
+  Future<List<Book>> lastAdded({bool forceUpdate = false}) async {
+    final url = baseURL.replace(path: '/home/releases', query: 'page=1&type=');
+    final response = await httpRepository.get(url, forceUpdate: forceUpdate);
 
-  @override
-  Future<List<Book>> lastAdded() {
-    return _tryWithAllBaseUrls<List<Book>>(
-      defaultValue: List.empty(),
-      callback: (baseURL) async {
-        final books = <Book>[];
+    final items = <Book>[];
+    final data = jsonDecode(response.body);
 
-        final response = await dio.get('$baseURL/home/releases?page=1&type=');
-        final data = response.data['releases'] ?? [];
+    for (final item in data['releases'] ?? List.empty(growable: false)) {
+      final src = item['image_thumb'] ?? item['image'];
 
-        for (final item in data) {
-          books.add(Book(
-            src: item['image_thumb'] ?? item['image'],
-            name: item['name'].toString().trim(),
-            path: item['link'],
-            scan: scan,
-            webID: item['id_serie'],
-          ));
-        }
+      if (src.contains('blurred')) continue;
 
-        return books;
-      },
-    );
+      items.add(Book(
+        src: item['image_thumb'] ?? item['image'],
+        name: item['name'].toString().trim(),
+        path: item['link'],
+        scan: scan,
+        webID: item['id_serie'],
+      ));
+    }
+
+    return items;
   }
 
   @override
-  Future<List<Book>> search(String value) {
-    return _tryWithAllBaseUrls<List<Book>>(
-      defaultValue: List.empty(),
-      callback: (baseURL) async {
-        final books = <Book>[];
-
-        final url = '$baseURL/lib/search/series.json';
-        final requestOptions = Options(headers: {"x-requested-with": "XMLHttpRequest"});
-        final requestData = FormData.fromMap({'search': value});
-        final response = await dio.post(url, data: requestData, options: requestOptions);
-        final data = response.data['series'] ?? [];
-
-        for (final item in data) {
-          books.add(Book(
-            src: item['image_thumb'] ?? item['image'] ?? item['cover_thumb'] ?? item['cover'],
-            name: item['name'].toString().trim(),
-            path: item['link'],
-            scan: scan,
-            webID: item['id_serie'],
-          ));
-        }
-
-        return books;
-      },
+  Future<List<Book>> search(String value, {bool forceUpdate = false}) async {
+    final url = baseURL.replace(path: '/lib/search/series.json');
+    final response = await httpRepository.post(
+      url,
+      key: value,
+      body: {'search': value},
+      headers: {"x-requested-with": "XMLHttpRequest"},
+      forceUpdate: forceUpdate,
     );
+
+    final items = <Book>[];
+    final data = jsonDecode(response.body);
+
+    for (final item in data['series'] ?? List.empty(growable: false)) {
+      items.add(Book(
+        src: item['image_thumb'] ?? item['image'] ?? item['cover_thumb'] ?? item['cover'],
+        name: item['name'].toString().trim(),
+        path: item['link'],
+        scan: scan,
+        webID: item['id_serie'],
+      ));
+    }
+
+    return items;
   }
 
   @override
-  Future<BookData> data(Book book) async {
-    return _tryWithAllBaseUrls<BookData>(
-      path: book.path,
-      callback: (url) async {
-        final response = await dio.get(url);
-        final $ = parse(response.data);
+  Future<BookData> data(Book book, {bool forceUpdate = false}) async {
+    final url = baseURL.replace(path: book.path);
+    final response = await httpRepository.get(url, forceUpdate: forceUpdate);
+    final document = parse(response.body);
+    final element = document.body;
 
-        final scanScrapingUtil = ScanScrapingUtil($);
-        final categories = scanScrapingUtil.categories(selector: '.series-info li a span.button');
-        final sinopse = scanScrapingUtil.sinopse(selector: '#series-data .series-desc');
+    if (element is! Element) throw Exception('Invalid document body');
 
-        // Chapters ------------------------------------------------
+    final categories = ScrapingUtil.getCategories(element: element, selector: '.series-info li a span.button');
+    final sinopse = ScrapingUtil.getSinopse(element: element, selector: '#series-data .series-desc > span');
 
-        final baseURL = _baseByURL(url);
-        final pageChapters = [];
-        final totalChaptersPage = $.querySelector('.container-box h2 span')?.text.trim() ?? '1';
+    final pageChapters = [];
+    final totalChaptersPage = element.querySelector('.container-box h2 span')?.text.trim() ?? '1';
 
-        await Future.wait(List.generate((int.parse(totalChaptersPage) / 30).ceil(), (index) async {
-          final page = index + 1;
-          final baseChapterUrl = '$baseURL/series/chapters_list.json';
-          final chapterUrl = '$baseChapterUrl?page=$page&id_serie=${book.webID}';
+    await Future.wait(List.generate((int.parse(totalChaptersPage) / 30).ceil(), (index) async {
+      final page = index + 1;
+      final chapterUrl = '$baseURL/series/chapters_list.json?page=$page&id_serie=${book.webID}';
+      final chapterResponse = await httpRepository.get(
+        Uri.parse(chapterUrl),
+        headers: {"x-requested-with": "XMLHttpRequest"},
+        forceUpdate: forceUpdate,
+      );
 
-          final requestOptions = Options(headers: {"x-requested-with": "XMLHttpRequest"});
-          final response = await dio.get(chapterUrl, options: requestOptions);
+      final data = jsonDecode(chapterResponse.body);
+      pageChapters.addAll(data['chapters']);
+    }));
 
-          pageChapters.addAll(response.data['chapters']);
-        }));
+    final chapters = <Chapter>[];
 
-        final chapters = await _chapters<dynamic, dynamic>(
-          items: pageChapters,
-          callback: (item) {
-            final release = Map.from(item['releases']).values.first;
+    for (final item in pageChapters) {
+      final release = Map.from(item['releases']).values.first;
+      final name = 'Cap. ${item['number']}';
 
-            return ChapterBase(
-              url: '$baseURL${release['link']}',
-              name: 'Cap. ${item['number']}',
-              webId: release['id_release'].toString(),
-              bookSlug: book.slug,
-            );
-          },
-        );
+      chapters.add(Chapter(
+        id: Chapter.idByName(name),
+        url: '$baseURL${release['link']}',
+        name: name,
+        webId: book.webID,
+      ));
+    }
 
-        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: book.type);
-      },
-    );
+    chapters.sort((a, b) => b.id.compareTo(a.id));
+    return BookData(sinopse: sinopse, categories: categories, book: book, chapters: chapters);
   }
 
   @override
   Future<Content> content(Chapter chapter) async {
-    return await _tryWithAllBaseUrls<Content>(
-      path: chapter.url,
-      callback: (url) async {
-        final response = await dio.get(url);
+    final response = await httpRepository.get(Uri.parse(chapter.url));
 
-        final exp = RegExp(r'''window\.READER_TOKEN = ('.*?'|".*?")''');
-        final matches = exp.allMatches(response.data);
-        final expQuote = RegExp(r'''['"]''');
-        final matchKey = (matches.first.group(1) ?? '').replaceAll(expQuote, '').trim();
+    final idMatches = RegExp(r'''window\.READER_ID_RELEASE = ('.*?'|".*?")''').allMatches(response.body);
+    final tokenMatches = RegExp(r'''window\.READER_TOKEN = ('.*?'|".*?")''').allMatches(response.body);
 
-        final sources = await _tryWithAllBaseUrls<List<String>>(
-          path: '/leitor/pages/${chapter.webId}.json?key=$matchKey',
-          callback: (contentUrl) async {
-            final response = await dio.get(contentUrl);
-            final sources = <String>[];
+    final chapterId = _byMatches(idMatches);
+    final chapterKey = _byMatches(tokenMatches);
 
-            for (final img in response.data['images']) {
-              sources.add(img['legacy'] ?? img['avif']);
-            }
+    final url = baseURL.replace(path: '/leitor/pages/$chapterId.json?key=$chapterKey');
+    final data = await httpRepository.get(url);
 
-            return sources;
-          },
-        );
+    final key = widget.GlobalObjectKey('${chapter.id}-${DateTime.now().millisecondsSinceEpoch}');
+    final images = <String>[];
 
-        final key = widget.GlobalObjectKey(chapter.id);
-        return Content(key: key, chapter: chapter, items: sources);
-      },
-    );
+    for (final image in jsonDecode(data.body)['images']) {
+      images.add(image['legacy'] ?? image['avif']);
+    }
+
+    return Content(key: key, title: chapter.name, images: images);
+  }
+
+  String _byMatches(Iterable<RegExpMatch> matches) {
+    return (matches.first.group(1) ?? '').replaceAll(RegExp(r'''['"]'''), '').trim();
   }
 }

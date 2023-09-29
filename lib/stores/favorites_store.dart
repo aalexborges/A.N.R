@@ -1,6 +1,6 @@
 import 'package:anr/models/book.dart';
 import 'package:anr/models/scan.dart';
-import 'package:anr/repositories/favorites_repository.dart';
+import 'package:anr/service_locator.dart';
 import 'package:mobx/mobx.dart';
 
 part 'favorites_store.g.dart';
@@ -19,10 +19,10 @@ abstract class _FavoritesStore with Store {
   ObservableList<Book> favorites = ObservableList();
 
   @action
-  Future<void> get() async {
+  Future<void> get({bool forceUpdate = false}) async {
     isLoading = true;
 
-    final items = await FavoritesRepository.I.getAll(scan: filterBy);
+    final items = await favoritesRepository.get(scan: filterBy, forceUpdate: forceUpdate);
 
     favorites = ObservableList.of(items);
     isLoading = false;

@@ -1,132 +1,52 @@
-part of '../scan_base_repository.dart';
+part of 'package:anr/repositories/scans/scan_base_repository.dart';
 
 class PrismaRepository extends ScanBaseRepository {
-  const PrismaRepository();
+  static final PrismaRepository instance = PrismaRepository._internal();
+  factory PrismaRepository() => instance;
 
-  Scan get scan => Scan.prisma;
+  PrismaRepository._internal();
+
+  final baseURL = Uri.parse('https://prismascans.net');
+  final scan = Scan.prisma;
 
   @override
-  List<String> get baseURLs => ['https://prismascans.net'];
-
-  @override
-  Future<List<Book>> lastAdded() {
-    return _tryWithAllBaseUrls<List<Book>>(
-      defaultValue: List.empty(),
-      callback: (baseURL) async {
-        final books = <Book>[];
-
-        final response = await dio.get(baseURL);
-        final $ = parse(response.data);
-
-        for (Element element in $.querySelectorAll('#loop-content .page-item-detail')) {
-          final scraping = ScrapingUtil(element);
-
-          final src = scraping.getSrc(selector: 'img') ?? scraping.getSrc(selector: 'img', bySrcSet: true);
-          final path = scraping.getURL(selector: 'h3 a');
-          final name = scraping.getByText(selector: 'h3 a');
-
-          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
-
-          books.add(Book(src: src!, name: name, path: path, scan: scan));
-        }
-
-        return books;
-      },
-    );
+  Future<List<Book>> lastAdded({bool forceUpdate = false}) async {
+    final response = await httpRepository.get(baseURL, forceUpdate: forceUpdate);
+    return ScrapingUtil.genericLastAdd(document: parse(response.body), scan: scan);
   }
 
   @override
-  Future<List<Book>> search(String value) {
-    return _tryWithAllBaseUrls<List<Book>>(
-      defaultValue: List.empty(),
-      callback: (baseURL) async {
-        final books = <Book>[];
+  Future<List<Book>> search(String value, {bool forceUpdate = false}) async {
+    if (value.isEmpty) return [];
 
-        final url = '$baseURL/?s=$value&post_type=wp-manga';
-        final response = await dio.get(url);
-        final $ = parse(response.data);
+    final uri = baseURL.replace(query: 's=$value&post_type=wp-manga');
+    final response = await httpRepository.get(uri, forceUpdate: forceUpdate);
 
-        for (Element element in $.querySelectorAll('.c-tabs-item div.row')) {
-          final scraping = ScrapingUtil(element);
-
-          final src = scraping.getSrc(selector: 'img') ?? scraping.getSrc(selector: 'img', bySrcSet: true);
-          final path = scraping.getURL(selector: 'h3 a');
-          final name = scraping.getByText(selector: 'h3 a');
-
-          if (ScrapingUtil.hasEmptyOrNull([src, path, name])) continue;
-
-          books.add(Book(src: src!, name: name, path: path, scan: scan));
-        }
-
-        return books;
-      },
-    );
+    return ScrapingUtil.genericSearch(document: parse(response.body), scan: scan);
   }
 
   @override
-  Future<BookData> data(Book book) async {
-    return _tryWithAllBaseUrls<BookData>(
-      path: book.path,
-      callback: (baseURL) async {
-        final response = await dio.get(baseURL);
-        final $ = parse(response.data);
+  Future<BookData> data(Book book, {bool forceUpdate = false}) async {
+    final uri = Uri.parse(book.path);
+    final chapterUri = uri.replace(path: '${uri.path}ajax/chapters');
 
-        final scanScrapingUtil = ScanScrapingUtil($);
-        final categories = scanScrapingUtil.categories();
-        final type = scanScrapingUtil.type(alternativeType: book.type);
-        final sinopse = scanScrapingUtil.sinopse();
+    final response = await httpRepository.get(uri, forceUpdate: forceUpdate);
+    final chapterResponse = await httpRepository.post(
+      chapterUri,
+      forceUpdate: forceUpdate,
+      headers: {"x-requested-with": "XMLHttpRequest"},
+    );
 
-        // Chapters ------------------------------------------------
-
-        final chaptersElements = await _chapterElements(baseURL);
-        final chapters = await _chapters(
-          items: chaptersElements,
-          transform: (value) => ScrapingUtil(value),
-          callback: (item) {
-            final url = item.getURL();
-            final name = item.getByText();
-
-            if (ScrapingUtil.hasEmptyOrNull([url, name])) return null;
-            return ChapterBase(name: name, url: url, bookSlug: book.slug);
-          },
-        );
-
-        return BookData(chapters: chapters, sinopse: sinopse, categories: categories, type: type);
-      },
+    return ScrapingUtil.genericData(
+      book: book,
+      document: parse(response.body),
+      chapterDocument: parse(chapterResponse.body),
     );
   }
 
   @override
   Future<Content> content(Chapter chapter) async {
-    return await _tryWithAllBaseUrls<Content>(
-      path: chapter.url,
-      callback: (url) async {
-        final response = await dio.get(url);
-        final $ = parse(response.data);
-
-        final key = widget.GlobalObjectKey(chapter.id);
-        final novelContent = $.querySelector('.reading-content .text-left');
-
-        if (novelContent != null) {
-          return Content(
-            key: key,
-            items: [novelContent.innerHtml.trim()],
-            chapter: chapter,
-            onlyText: true,
-          );
-        }
-
-        final sources = <String>[];
-
-        for (final img in $.querySelectorAll('.reading-content img')) {
-          final src = ScrapingUtil(img).getSrc();
-          if (ScrapingUtil.hasEmptyOrNull([src])) continue;
-
-          sources.add(src!);
-        }
-
-        return Content(key: key, chapter: chapter, items: sources);
-      },
-    );
+    final response = await httpRepository.get(Uri.parse(chapter.url));
+    return ScrapingUtil.genericContent(id: chapter.id, document: parse(response.body), title: chapter.name);
   }
 }

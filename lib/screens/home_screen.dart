@@ -1,8 +1,8 @@
-import 'package:anr/main.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/router.dart';
 import 'package:anr/stores/home_store.dart';
 import 'package:anr/widgets/book_list_item.dart';
+import 'package:anr/widgets/user_modal.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,13 +19,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
-  late HomeStore _store;
+  final _store = HomeStore();
 
   @override
   void initState() {
     super.initState();
-
-    _store = HomeStore()..getLatestBooksAdded();
+    _store.loadItems();
   }
 
   @override
@@ -40,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           IconButton(onPressed: () => context.push(ScreenPaths.search), icon: const Icon(Icons.search_rounded)),
           IconButton(onPressed: () => context.push(ScreenPaths.favorites), icon: const Icon(Icons.favorite_rounded)),
           IconButton(
-            onPressed: () => userRepository.showModal(context),
+            onPressed: () => UserModal.showModal(context),
             icon: SizedBox.fromSize(
               size: const Size(24, 24),
               child: CircleAvatar(backgroundImage: CachedNetworkImageProvider(photoURL, maxHeight: 48, maxWidth: 48)),
@@ -49,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _store.getLatestBooksAdded,
+        onRefresh: () => _store.loadItems(forceUpdate: true),
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.only(top: 16, bottom: 8),
@@ -74,36 +73,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
           child: Text(t.lastAdded(scan.value.toUpperCase()), style: Theme.of(context).textTheme.titleSmall),
         ),
         Container(
+          height: BookListItemSize.height,
           margin: const EdgeInsets.only(bottom: 16),
           child: Observer(builder: (context) {
-            if (_store.isLoading) {
-              return _horizontalList(
-                itemCount: (MediaQuery.of(context).size.width / BookListElementSize.width).ceil(),
-                itemBuilder: (context, index) => const BookListElementShimmer(),
-              );
-            }
-
             final books = _store.lastAdded[scan] ?? List.empty();
-            return _horizontalList(
-              itemCount: books.length,
-              itemBuilder: (context, index) => BookListElement(book: books[index]),
+            final items = _store.isLoading ? BookListItemSize.loadingItems(context) : books;
+
+            return ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: items.length,
+              itemBuilder: (context, index) => BookListItem(book: items[index]),
+              scrollDirection: Axis.horizontal,
             );
           }),
         ),
       ],
-    );
-  }
-
-  Widget _horizontalList({required Widget? Function(BuildContext, int) itemBuilder, int? itemCount}) {
-    return SizedBox(
-      height: BookListElementSize.height,
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        itemCount: itemCount,
-        itemBuilder: itemBuilder,
-        scrollDirection: Axis.horizontal,
-      ),
     );
   }
 }

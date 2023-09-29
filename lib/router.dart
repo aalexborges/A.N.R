@@ -15,13 +15,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ScreenPaths {
-  static String auth = '/auth';
-  static String home = '/home';
-  static String book = '/book';
-  static String search = '/search';
-  static String content = '/content';
-  static String details = '/details';
-  static String favorites = '/favorites';
+  static const String auth = '/auth';
+  static const String home = '/home';
+  static const String book = '/book';
+  static const String search = '/search';
+  static const String content = '/content';
+  static const String details = '/details';
+  static const String favorites = '/favorites';
 }
 
 final appRouter = GoRouter(
@@ -41,7 +41,7 @@ final appRouter = GoRouter(
 
 String? _handleRedirect(BuildContext context, GoRouterState state) {
   final isAuthenticated = FirebaseAuth.instance.currentUser != null;
-  final isLoginRoute = state.subloc == ScreenPaths.auth;
+  final isLoginRoute = state.matchedLocation == ScreenPaths.auth;
 
   if (!isAuthenticated) return isLoginRoute ? null : ScreenPaths.auth;
   if (isLoginRoute) return ScreenPaths.home;

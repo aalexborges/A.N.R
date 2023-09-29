@@ -41,13 +41,13 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
-  late final _$getLatestBooksAddedAsyncAction =
-      AsyncAction('_HomeStore.getLatestBooksAdded', context: context);
+  late final _$loadItemsAsyncAction =
+      AsyncAction('_HomeStore.loadItems', context: context);
 
   @override
-  Future<void> getLatestBooksAdded() {
-    return _$getLatestBooksAddedAsyncAction
-        .run(() => super.getLatestBooksAdded());
+  Future<void> loadItems({bool forceUpdate = false}) {
+    return _$loadItemsAsyncAction
+        .run(() => super.loadItems(forceUpdate: forceUpdate));
   }
 
   @override
