@@ -17,9 +17,9 @@ class HttpCacheManager {
     return _box!;
   }
 
-  Future<http.Response?> read(String url, String method) async {
+  Future<http.Response?> read(String url, String method, {String? key}) async {
     final manager = await box();
-    final cache = manager.get(HttpCache.idFrom(url, method));
+    final cache = manager.get(HttpCache.idFrom(url, method, key: key));
 
     if (cache is! HttpCache) return null;
 
@@ -31,9 +31,9 @@ class HttpCacheManager {
     return http.Response(cache.body, cache.statusCode, headers: cache.headers);
   }
 
-  Future<HttpCache> write(http.Response response, {required String url, required String method}) async {
+  Future<HttpCache> write(http.Response response, {required String url, required String method, String? key}) async {
     final manager = await box();
-    final item = HttpCache.fromHttpResponse(response, url: url, method: method);
+    final item = HttpCache.fromHttpResponse(response, url: url, method: method, key: key);
 
     await manager.put(item.id, item);
     return item;

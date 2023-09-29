@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
+import 'package:slugify/slugify.dart';
 
 part 'http_cache.g.dart';
 
@@ -65,9 +66,14 @@ class HttpCache extends HiveObject {
 
   factory HttpCache.fromJson(String source) => HttpCache.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  factory HttpCache.fromHttpResponse(http.Response response, {required String url, required String method}) {
+  factory HttpCache.fromHttpResponse(
+    http.Response response, {
+    required String url,
+    required String method,
+    String? key,
+  }) {
     return HttpCache(
-      id: HttpCache.idFrom(url, method),
+      id: HttpCache.idFrom(url, method, key: key),
       url: url,
       body: response.body,
       method: method,
@@ -76,5 +82,12 @@ class HttpCache extends HiveObject {
     );
   }
 
-  static idFrom(String url, String method) => '$method.$url';
+  static idFrom(String url, String method, {String? key}) {
+    final id = '$method.$url';
+
+    print(slugify((key ?? '').trim()));
+
+    if (key is String) return '$id.${slugify(key.trim())}';
+    return id;
+  }
 }
