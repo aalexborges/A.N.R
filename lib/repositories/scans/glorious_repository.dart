@@ -36,7 +36,7 @@ class GloriousRepository extends ScanBaseRepository {
     if (value.isEmpty) return [];
 
     final uri = apiURL.replace(path: '/series/search');
-    final response = await httpRepository.post(uri, body: {'term': value}, forceUpdate: forceUpdate);
+    final response = await httpRepository.post(uri, body: {'term': value}, forceUpdate: forceUpdate, key: value);
     final data = jsonDecode(response.body);
 
     final items = <Book>[];

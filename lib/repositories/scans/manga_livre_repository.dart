@@ -39,6 +39,7 @@ class MangaLivreRepository extends ScanBaseRepository {
     final url = baseURL.replace(path: '/lib/search/series.json');
     final response = await httpRepository.post(
       url,
+      key: value,
       body: {'search': value},
       headers: {"x-requested-with": "XMLHttpRequest"},
       forceUpdate: forceUpdate,
