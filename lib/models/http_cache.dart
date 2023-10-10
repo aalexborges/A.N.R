@@ -85,8 +85,6 @@ class HttpCache extends HiveObject {
   static idFrom(String url, String method, {String? key}) {
     final id = '$method.$url';
 
-    print(slugify((key ?? '').trim()));
-
     if (key is String) return '$id.${slugify(key.trim())}';
     return id;
   }

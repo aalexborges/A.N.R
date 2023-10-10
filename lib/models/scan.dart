@@ -7,7 +7,8 @@ enum Scan {
   glorious,
   mangaHost,
   mangaLivre,
-  hunters;
+  hunters,
+  argo;
 
   static Scan fromString(String value) {
     return Scan.values.singleWhere((scan) => scan.value == value.toLowerCase().trim());
@@ -35,6 +36,8 @@ enum Scan {
         return MangaLivreRepository.instance;
       case Scan.hunters:
         return HuntersRepository.instance;
+      case Scan.argo:
+        return ArgoRepository.instance;
     }
   }
 }
@@ -56,6 +59,8 @@ extension ScansExtension on Scan {
         return 'manga livre';
       case Scan.hunters:
         return 'hunters';
+      case Scan.argo:
+        return 'argo';
     }
   }
 

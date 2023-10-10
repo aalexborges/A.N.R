@@ -39,20 +39,6 @@ class ContentItem extends StatelessWidget {
               );
             },
           ),
-          // ListView(
-          //   physics: const ScrollPhysics(),
-          //   shrinkWrap: true,
-          //   children: content.images!.map((source) {
-          //     return CachedNetworkImage(
-          //       fit: BoxFit.fitWidth,
-          //       imageUrl: source,
-          //       httpHeaders: headers,
-          //       errorWidget: (context, url, error) => const ContentItemImageError(),
-          //       imageBuilder: imageBuilder,
-          //       placeholder: imagePlaceholder,
-          //     );
-          //   }).toList(),
-          // ),
         ],
       );
     }
