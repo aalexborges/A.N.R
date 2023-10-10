@@ -6,11 +6,14 @@ import 'package:anr/models/chapter.dart';
 import 'package:anr/models/content.dart';
 import 'package:anr/models/scan.dart';
 import 'package:anr/service_locator.dart';
+import 'package:anr/utils/argo_graphql_body.dart';
 import 'package:anr/utils/scraping_util.dart';
 import 'package:flutter/material.dart' as widget;
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:slugify/slugify.dart';
 
+part 'package:anr/repositories/scans/argo_repository.dart';
 part 'package:anr/repositories/scans/glorious_repository.dart';
 part 'package:anr/repositories/scans/hunters_repository.dart';
 part 'package:anr/repositories/scans/manga_host_repository.dart';
